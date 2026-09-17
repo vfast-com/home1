@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VFast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080a;--panel:#141416;--panel2:#1c1c1f;--stroke:#28282c;
+  --ink:#f2f2f4;--sub:#84848c;--lime:#c8ff3d;--lime-d:#9fd620;--danger:#ff5c5c;
+  --fd:'Space Grotesk',sans-serif;--f:'Inter',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:14px;display:flex;justify-content:center}
+.app{width:100%;max-width:480px;min-height:100vh;display:flex;flex-direction:column}
+
+.nav{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 0}
+.nav-l{display:flex;align-items:center;gap:9px}
+.sq{width:26px;height:26px;border-radius:7px;background:var(--lime);display:grid;place-items:center;font-family:var(--fd);font-weight:800;font-size:13px;color:#080808}
+.logo{font-family:var(--fd);font-size:14px;letter-spacing:2px}
+.icon-btn{width:34px;height:34px;border-radius:10px;background:var(--panel);border:1px solid var(--stroke);color:var(--sub);display:grid;place-items:center;cursor:pointer;font-size:16px}
+.icon-btn:hover{color:var(--ink)}
+
+.bal-sec{padding:22px 18px 0}
+.bal-k{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:1.2px;font-weight:600}
+.bal-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.bal-v{font-family:var(--fd);font-size:40px;font-weight:700;letter-spacing:-1.5px;line-height:1;margin-top:6px}
+.bal-tag{font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:8px;white-space:nowrap;margin-bottom:4px;border:1px solid}
+.bal-tag.ready{background:rgba(200,255,61,.12);color:var(--lime);border-color:rgba(200,255,61,.3)}
+.bal-tag.wait{background:var(--panel2);color:var(--sub);border-color:var(--stroke)}
+.mi-row{display:flex;justify-content:space-between;font-size:10.5px;color:var(--sub);margin:14px 0 5px}
+.mi-bar{height:8px;border-radius:5px;background:var(--panel2);overflow:hidden;border:1px solid var(--stroke)}
+.mi-fill{height:100%;background:var(--lime);border-radius:5px;transition:width .5s ease}
+.mi-note{font-size:11px;color:var(--sub);margin-top:8px;line-height:1.6}
+.wd-btn{width:100%;margin-top:16px;border:none;border-radius:13px;padding:14px;cursor:pointer;background:var(--lime);color:#080808;font-family:var(--fd);font-size:14px;font-weight:700;transition:transform .12s}
+.wd-btn:active:not(:disabled){transform:scale(.98)}
+.wd-btn:disabled{background:var(--panel2);color:#57575e;cursor:not-allowed}
+
+.chips{display:flex;gap:8px;padding:16px 18px 0}
+.chip{flex:1;background:var(--panel);border:1px solid var(--stroke);border-radius:12px;padding:10px 12px}
+.chip .k{font-size:9.5px;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.chip .v{font-family:var(--fd);font-size:14px;font-weight:700;margin-top:3px}
+.chip.hi .v{color:var(--lime)}
+
+.sec-hd{display:flex;align-items:center;justify-content:space-between;padding:22px 18px 4px}
+.sec-hd h2{font-family:var(--fd);font-size:15px;font-weight:700}
+.cnt-badge{font-size:11px;color:var(--sub);background:var(--panel);border:1px solid var(--stroke);padding:3px 9px;border-radius:20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 18px 24px}
+.card{background:var(--panel);border:1px solid var(--stroke);border-radius:16px;padding:14px 12px;display:flex;flex-direction:column;align-items:flex-start;gap:9px;cursor:pointer;transition:border-color .15s,transform .12s;position:relative;min-height:128px}
+.card:active:not(.done){transform:scale(.96)}
+.card:hover:not(.done){border-color:var(--lime)}
+.card.done{opacity:.3;cursor:default}
+.icobox{width:34px;height:34px;border-radius:9px;background:var(--panel2);border:1px solid var(--stroke);display:grid;place-items:center;color:var(--lime)}
+.icobox svg{width:18px;height:18px}
+.card-nm{font-size:12.5px;font-weight:700;line-height:1.3}
+.card-mt{font-size:10px;color:var(--sub)}
+.card-badge{position:absolute;top:10px;right:10px;font-family:var(--fd);font-size:10px;font-weight:700;padding:3px 7px;border-radius:8px;border:1px solid}
+.card-badge.pay{color:var(--lime);background:rgba(200,255,61,.1);border-color:rgba(200,255,61,.25)}
+.card-badge.nopay{color:var(--sub);background:var(--panel2);border-color:var(--stroke)}
+.empty{grid-column:1/-1;background:var(--panel);border:1px dashed var(--stroke);border-radius:18px;padding:36px 20px;text-align:center;color:var(--sub);font-size:13px;line-height:1.8}
+.empty b{color:var(--ink)}
+
+/* overlay */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.overlay.on{display:flex}
+.dlg{width:100%;max-width:410px;background:var(--panel);border-radius:22px;border:1px solid var(--stroke);max-height:90vh;overflow-y:auto;animation:zIn .22s cubic-bezier(.2,1,.4,1)}
+.dlg::-webkit-scrollbar{width:4px}
+.dlg::-webkit-scrollbar-thumb{background:var(--stroke);border-radius:2px}
+@keyframes zIn{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+.dlg-top{padding:18px 18px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--stroke);z-index:2}
+.dlg-top .t{flex:1}
+.dlg-top .t1{font-family:var(--fd);font-size:14.5px;font-weight:700}
+.dlg-top .t2{font-size:11px;color:var(--sub);margin-top:2px}
+.dlg-x{background:var(--panel2);border:none;color:var(--sub);width:28px;height:28px;border-radius:9px;font-size:16px;cursor:pointer;display:grid;place-items:center;flex:0 0 auto}
+.dlg-body{padding:16px 18px 22px}
+
+/* terms */
+.terms-box{font-size:12px;line-height:1.9;color:var(--sub);background:var(--panel2);padding:16px;border-radius:12px;border:1px solid var(--stroke);height:260px;overflow-y:auto;margin-bottom:12px}
+.terms-box::-webkit-scrollbar{width:4px}
+.terms-box::-webkit-scrollbar-thumb{background:var(--stroke);border-radius:2px}
+.terms-box h4{color:var(--ink);font-size:12.5px;font-weight:700;margin:14px 0 5px;font-family:var(--fd)}
+.terms-box h4:first-child{margin-top:0}
+.terms-box .red{color:var(--danger);font-weight:700}
+.scroll-hint{text-align:center;font-size:10.5px;margin-bottom:12px;letter-spacing:.3px}
+.scroll-hint.done{color:var(--lime)}
+.scroll-hint.wait{color:var(--sub)}
+.t-check{display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--panel2);border-radius:12px;border:1px solid var(--stroke);margin-bottom:14px}
+.t-check input{width:18px;height:18px;flex:0 0 auto;margin-top:1px;accent-color:var(--lime);cursor:pointer}
+.t-check label{font-size:12px;color:var(--ink);line-height:1.6;cursor:pointer}
+
+/* survey */
+.steps{display:flex;gap:5px;margin-bottom:16px}
+.steps i{flex:1;height:4px;border-radius:3px;background:var(--panel2)}
+.steps i.on{background:var(--lime)}
+.q-txt{font-family:var(--fd);font-size:15px;font-weight:600;line-height:1.55;margin-bottom:14px}
+.opts{display:grid;gap:8px}
+.opt{background:var(--panel2);border:1.5px solid var(--stroke);border-radius:12px;padding:12px 13px;text-align:left;font-family:var(--f);font-size:13px;color:var(--ink);cursor:pointer;transition:border-color .15s;display:flex;align-items:center;gap:9px;width:100%}
+.opt:hover{border-color:var(--lime)}
+.opt.on{border-color:var(--lime);background:rgba(200,255,61,.08)}
+.opt .dot{width:16px;height:16px;border-radius:50%;border:2px solid #47474d;flex:0 0 auto;display:grid;place-items:center}
+.opt.on .dot{border-color:var(--lime);background:var(--lime)}
+.opt.on .dot::after{content:"";width:5px;height:5px;border-radius:50%;background:#080808}
+
+/* captcha */
+.cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:4px}
+.cap-opt{background:var(--panel2);border:1.5px solid var(--stroke);border-radius:12px;padding:13px;font-family:var(--fd);font-size:18px;font-weight:700;color:var(--ink);cursor:pointer;transition:border-color .15s,color .15s}
+.cap-opt:hover{border-color:var(--lime);color:var(--lime)}
+
+/* buttons */
+.btn{width:100%;margin-top:14px;border:none;border-radius:12px;padding:13px;cursor:pointer;font-family:var(--fd);font-size:13.5px;font-weight:700}
+.btn.prime{background:var(--lime);color:#080808}
+.btn.prime:hover{background:var(--lime-d)}
+.btn.mute{background:var(--panel2);color:var(--sub)}
+.btn:disabled{background:var(--panel2);color:#57575e;cursor:not-allowed}
+
+/* form */
+.lb{display:block;font-size:10.5px;font-weight:700;margin-bottom:6px;color:var(--sub);text-transform:uppercase;letter-spacing:.4px}
+.fld{width:100%;background:var(--panel2);border:1.5px solid var(--stroke);border-radius:12px;padding:12px;font-family:var(--f);font-size:13.5px;color:var(--ink);outline:none;margin-bottom:11px}
+.fld:focus{border-color:var(--lime)}
+.fld.bad{border-color:var(--danger)}
+select.fld{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2384848c'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:18px}
+.err-msg{font-size:11.5px;color:var(--danger);min-height:16px;display:block;margin:-5px 0 7px}
+.hint-txt{font-size:11px;color:var(--sub);line-height:1.7;margin-bottom:12px}
+
+/* proc / result */
+.proc{text-align:center;padding:28px 10px 8px}
+.spinner{width:52px;height:52px;margin:0 auto 16px}
+.spinner svg{width:100%;height:100%;animation:rot 1s linear infinite}
+.spinner circle{fill:none;stroke:var(--panel2);stroke-width:5}
+.spinner circle.arc{stroke:var(--lime);stroke-linecap:round;stroke-dasharray:90 200}
+@keyframes rot{to{transform:rotate(360deg)}}
+.proc h3{font-family:var(--fd);font-size:15px;margin-bottom:6px;font-weight:700}
+.proc p{font-size:12px;color:var(--sub);line-height:1.7}
+.check-svg{width:72px;height:72px;margin:0 auto 14px}
+.check-svg svg{width:100%;height:100%}
+.cc{fill:none;stroke-width:5;stroke-dasharray:220;stroke-dashoffset:220;animation:dc .5s ease forwards}
+.cc.ok{stroke:var(--lime)}
+.cc.no{stroke:#555}
+.ct{fill:none;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;animation:dt .3s .45s ease forwards}
+.ct.ok{stroke:var(--lime)}
+.cx{fill:none;stroke:#555;stroke-width:6;stroke-linecap:round;stroke-dasharray:30;stroke-dashoffset:30;animation:dt .3s .45s ease forwards}
+@keyframes dc{to{stroke-dashoffset:0}}
+@keyframes dt{to{stroke-dashoffset:0}}
+.big-amt{font-family:var(--fd);font-size:30px;font-weight:800;color:var(--lime);margin:12px 0 6px}
+.info-rows{background:var(--panel2);border-radius:12px;padding:12px;margin-top:12px;border:1px solid var(--stroke)}
+.info-row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:12px}
+.info-row .k{color:var(--sub)}
+.info-row .v{font-weight:600;text-align:right;word-break:break-word}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(14px);background:var(--panel);color:var(--lime);font-size:13px;padding:11px 18px;border-radius:24px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:70;border:1px solid var(--stroke);font-weight:600;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="nav">
+    <div class="nav-l"><div class="sq">V</div><span class="logo">VFAST</span></div>
+    <button class="icon-btn" id="resetBtn">↺</button>
+  </div>
+  <div class="bal-sec">
+    <div class="bal-k">Số dư khả dụng</div>
+    <div class="bal-row">
+      <div class="bal-v" id="balV">0₫</div>
+      <div class="bal-tag wait" id="balTag">Đang tích luỹ</div>
+    </div>
+    <div class="mi-row"><span>0₫</span><span>Mốc rút 10.000₫</span></div>
+    <div class="mi-bar"><div class="mi-fill" id="miFill" style="width:0%"></div></div>
+    <div class="mi-note" id="miNote">Hoàn thành khảo sát để tích luỹ số dư</div>
+    <button class="wd-btn" id="wdBtn" disabled>Rút tiền</button>
+  </div>
+  <div class="chips">
+    <div class="chip hi"><div class="k">Đã làm</div><div class="v" id="stDone">0/24</div></div>
+    <div class="chip"><div class="k">Đã kiếm</div><div class="v" id="stEarn">0₫</div></div>
+    <div class="chip"><div class="k">Đã rút</div><div class="v" id="stWd">0₫</div></div>
+  </div>
+  <div class="sec-hd"><h2>Khảo sát</h2><div class="cnt-badge" id="cntLeft"></div></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="overlay" id="termsOv"><div class="dlg" id="termsDlg"></div></div>
+<div class="overlay" id="mainOv"><div class="dlg" id="mainDlg"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var KEY='vfast_v8';
+var $=function(id){return document.getElementById(id);};
+var MIN_WD=10000, FEE_UNDER=50000, FEE_PCT=0.05;
+var BANKS=['Vietcombank','Techcombank','BIDV','VietinBank','MB Bank','ACB','Agribank','VPBank','Sacombank','TPBank','VIB','SHB','HDBank','OCB','MSB','Eximbank','SeABank'];
+
+var SVGNS='xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"';
+var ICONS={
+  m01:'<svg '+SVGNS+'><path d="M7 8h10l-1 12H8Z"/><path d="M6 8h12"/></svg>',
+  m02:'<svg '+SVGNS+'><path d="M13 2 5 14h5l-1 8 8-12h-5Z"/></svg>',
+  m03:'<svg '+SVGNS+'><path d="M6 9h11v5a5 5 0 0 1-5 5H9a3 3 0 0 1-3-3V9Z"/><path d="M17 10h1.5a2 2 0 0 1 0 4H17"/><path d="M9 4c.5 1 .5 2-.3 3M12 4c.5 1 .5 2-.3 3"/></svg>',
+  m04:'<svg '+SVGNS+'><path d="M4.5 9h11v4.5A4.5 4.5 0 0 1 11 18H9a4.5 4.5 0 0 1-4.5-4.5V9Z"/><path d="M15.5 10h1.8a1.8 1.8 0 0 1 0 3.6h-1.8"/><path d="M4 20.5h13"/></svg>',
+  m05:'<svg '+SVGNS+'><path d="M8 6h8l-1 3H9Z"/><path d="M8.5 9h7l-1 10.5a1 1 0 0 1-1 .9h-3a1 1 0 0 1-1-.9Z"/><path d="M13 5v3"/></svg>',
+  m06:'<svg '+SVGNS+'><path d="M4 11h16a8 8 0 0 1-16 0Z"/><path d="M9 4c.6 1 .6 2-.3 3M12.5 4c.6 1 .6 2-.3 3"/></svg>',
+  m07:'<svg '+SVGNS+'><path d="M8 4h8v2.5l1.5 2V20a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1V8.5L8 6.5V4Z"/><path d="M8 12h8"/></svg>',
+  m08:'<svg '+SVGNS+'><path d="M9.5 12v6.5a2.5 2.5 0 0 0 5 0V12"/><path d="M12 3c2 0 3 1.3 3 2.8 0 .7-.3 1.3-.8 1.8.9.4 1.5 1.2 1.5 2.2 0 1.3-1.2 2.2-2.6 2.2h-1.2c-1.4 0-2.6-.9-2.6-2.2 0-1 .6-1.8 1.5-2.2-.5-.5-.8-1.1-.8-1.8C9 4.3 10 3 12 3Z"/></svg>',
+  m09:'<svg '+SVGNS+'><circle cx="12" cy="12" r="8"/><path d="M8.5 8.5 15.5 15.5M15.5 8.5 8.5 15.5"/></svg>',
+  m10:'<svg '+SVGNS+'><path d="M8.5 8 9 4h6l.5 4"/><path d="M6.5 8h11l1 11a1.5 1.5 0 0 1-1.5 1.6H7A1.5 1.5 0 0 1 5.5 19Z"/></svg>',
+  m11:'<svg '+SVGNS+'><path d="M10 3h4v3l1.5 2v11.5a1.5 1.5 0 0 1-1.5 1.5h-4A1.5 1.5 0 0 1 8.5 19.5V8L10 6V3Z"/><path d="M9 12h6"/></svg>',
+  m12:'<svg '+SVGNS+'><path d="M4 10a8 8 0 0 1 16 0Z"/><path d="M4 13h16M5 16h14"/></svg>',
+  m13:'<svg '+SVGNS+'><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><path d="M9 18h6M5 18 8 9h5l3 5h2M8 9V6h3"/></svg>',
+  m14:'<svg '+SVGNS+'><circle cx="9" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/><path d="M3 4h2l2.2 11.5a1.5 1.5 0 0 0 1.5 1.2H17a1.5 1.5 0 0 0 1.5-1.2L20 8H6.5"/></svg>',
+  m15:'<svg '+SVGNS+'><rect x="3.5" y="6" width="17" height="13" rx="2.2"/><path d="M3.5 10h17"/><circle cx="17" cy="14.5" r="1.1" fill="currentColor" stroke="none"/></svg>',
+  m16:'<svg '+SVGNS+'><path d="M5 18v-3M9.5 18v-6M14 18V9M18.5 18V5"/></svg>',
+  m17:'<svg '+SVGNS+'><rect x="6.5" y="2.5" width="11" height="19" rx="2"/><path d="M10 5.3h4M10.5 19h3"/></svg>',
+  m18:'<svg '+SVGNS+'><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><path d="M6.5 17.5 9 11h4l2 3h3.5M9 11 7.5 7.5H5"/></svg>',
+  m19:'<svg '+SVGNS+'><path d="M9 5.2h6l1 2.3v12a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 8 19.5v-12l1-2.3Z"/><path d="M8 11h8"/></svg>',
+  m20:'<svg '+SVGNS+'><rect x="4" y="3.5" width="16" height="17" rx="2"/><circle cx="12" cy="13" r="4"/><circle cx="12" cy="13" r="1.5"/></svg>',
+  m21:'<svg '+SVGNS+'><path d="M9.5 5.3h5l1.2 2.5v13a1.4 1.4 0 0 1-1.4 1.4H9.7a1.4 1.4 0 0 1-1.4-1.4v-13l1.2-2.5Z"/><path d="M8.3 12h7.4"/></svg>',
+  m22:'<svg '+SVGNS+'><path d="M4 10v4h3l7 4V6L7 10H4Z"/><path d="M17.5 9a4 4 0 0 1 0 6M20 7a7 7 0 0 1 0 10"/></svg>',
+  m23:'<svg '+SVGNS+'><rect x="6" y="8" width="12" height="12" rx="2.5"/><path d="M9 8V6a3 3 0 0 1 6 0v2M9.5 13.5h5"/></svg>',
+  m24:'<svg '+SVGNS+'><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V13a2.5 2.5 0 0 1-2.5 2.5H10L5 19v-3.5h-.5A2.5 2.5 0 0 1 4 13V6.5Z"/><circle cx="9" cy="9.7" r=".6" fill="currentColor" stroke="none"/><circle cx="12" cy="9.7" r=".6" fill="currentColor" stroke="none"/><circle cx="15" cy="9.7" r=".6" fill="currentColor" stroke="none"/></svg>'
+};
+
+var SURVEYS=[
+  {id:'m01',name:'Nước ngọt có ga',qs:[{q:'Bạn hay uống loại nào nhất?',a:['Coca-Cola','Pepsi','Fanta','Mirinda']},{q:'Quảng cáo hãng nào nhiều nhất?',a:['Coca-Cola','Pepsi','7Up','Sprite']},{q:'Bạn thường uống vào dịp nào?',a:['Khi ăn cơm','Khi đi chơi','Khi trời nóng','Ít khi uống']},{q:'Dung tích bạn hay chọn?',a:['Lon 330ml','Chai 390ml','Chai 1,5 lít','Tuỳ lúc']}]},
+  {id:'m02',name:'Nước tăng lực',qs:[{q:'Bạn hay dùng loại nào?',a:['Red Bull','Sting','Number 1','Monster']},{q:'Bạn uống khi nào?',a:['Làm việc khuya','Lái xe dài','Tập thể thao','Hiếm khi']},{q:'Hãng nào quảng cáo nhiều nhất?',a:['Red Bull','Sting','Number 1','Warrior']},{q:'Bạn uống bao lâu một lần?',a:['Hằng ngày','Vài lần/tuần','Vài lần/tháng','Hiếm khi']}]},
+  {id:'m03',name:'Cà phê hoà tan',qs:[{q:'Thương hiệu bạn hay mua?',a:['G7','Nescafé','Vinacafé','Highlands']},{q:'Bạn chọn cà phê vì điều gì?',a:['Hương vị đậm','Giá rẻ','Tiện lợi','Thương hiệu']},{q:'Bạn uống mấy lần một ngày?',a:['Không uống','1 lần','2 lần','3 lần trở lên']}]},
+  {id:'m04',name:'Chuỗi cà phê',qs:[{q:'Bạn hay ghé quán nào nhất?',a:['Highlands','Phúc Long','The Coffee House','Katinat']},{q:'Lý do bạn chọn quán đó?',a:['Đồ uống ngon','Không gian đẹp','Gần nhà','Hay khuyến mãi']},{q:'Bạn đi bao lâu một lần?',a:['Hằng ngày','Vài lần/tuần','Vài lần/tháng','Hiếm khi']},{q:'Bạn thường đi cùng ai?',a:['Một mình','Bạn bè','Đồng nghiệp','Gia đình']}]},
+  {id:'m05',name:'Trà sữa',qs:[{q:'Thương hiệu bạn thích nhất?',a:['Gong Cha','KOI Thé','TocoToco','Mixue']},{q:'Bạn uống bao lâu một lần?',a:['Hằng tuần','Vài lần/tháng','Hiếm khi','Không uống']},{q:'Topping bạn hay chọn?',a:['Trân châu đen','Thạch trái cây','Pudding','Không thêm']}]},
+  {id:'m06',name:'Mì ăn liền',qs:[{q:'Thương hiệu mì bạn hay mua?',a:['Hảo Hảo','Omachi','3 Miền','Kokomi']},{q:'Quảng cáo hãng nào nhiều nhất?',a:['Hảo Hảo','Omachi','Cung Đình','Gấu Đỏ']},{q:'Bạn ăn bao lâu một lần?',a:['Hằng ngày','Vài lần/tuần','Vài lần/tháng','Hiếm khi']},{q:'Bạn thích hương vị nào?',a:['Tôm chua cay','Bò hầm','Sườn heo','Lẩu thái']}]},
+  {id:'m07',name:'Sữa tươi',qs:[{q:'Nhà bạn dùng sữa hãng nào?',a:['Vinamilk','TH true MILK','Dutch Lady','Mộc Châu']},{q:'Bạn quan tâm điều gì nhất?',a:['Nguồn gốc','Giá','Hương vị','Bao bì']},{q:'Bạn mua sữa ở đâu?',a:['Siêu thị','Cửa hàng sữa','Tiện lợi 24h','Chợ, tạp hoá']}]},
+  {id:'m08',name:'Sữa chua và kem',qs:[{q:'Sữa chua hãng nào bạn hay ăn?',a:['Vinamilk','TH true YOGURT','Dutch Lady','Ba Vì']},{q:'Kem thương hiệu nào bạn thích?',a:['Merino','Celano',"Wall's",'Tràng Tiền']},{q:'Bạn ăn sữa chua vào lúc nào?',a:['Sau bữa ăn','Buổi xế','Trước khi ngủ','Không cố định']}]},
+  {id:'m09',name:'Bánh kẹo',qs:[{q:'Dịp Tết bạn hay mua hãng nào?',a:['Kinh Đô','Bibica','Orion','Hải Hà']},{q:'Loại bánh bạn hay mua nhất?',a:['Bánh quy','Bánh bông lan','Bánh xốp','Kẹo']},{q:'Bạn mua chủ yếu để làm gì?',a:['Ăn trong nhà','Làm quà','Đãi khách','Cho trẻ nhỏ']},{q:'Bạn quan tâm điều gì nhất?',a:['Hương vị','Giá','Bao bì đẹp','Thương hiệu']}]},
+  {id:'m10',name:'Snack và đồ ăn vặt',qs:[{q:'Snack thương hiệu nào bạn hay ăn?',a:['Oishi','Poca',"Lay's",'Swing']},{q:'Bạn mua snack để làm gì?',a:['Xem phim','Ăn vặt lúc rảnh','Đi chơi','Cho trẻ nhỏ']},{q:'Bạn thích vị nào nhất?',a:['Vị tôm','Vị bò','Vị phô mai','Vị nguyên bản']},{q:'Bạn ăn snack bao lâu một lần?',a:['Hằng ngày','Vài lần/tuần','Vài lần/tháng','Hiếm khi']}]},
+  {id:'m11',name:'Nước suối đóng chai',qs:[{q:'Bạn hay mua hãng nào?',a:['Aquafina','Lavie','Dasani','Vĩnh Hảo']},{q:'Bạn mua bao lâu một lần?',a:['Hằng ngày','Vài lần/tuần','Vài lần/tháng','Hiếm khi']},{q:'Bạn hay mua loại nào?',a:['Chai 500ml','Chai 1,5 lít','Bình 20 lít','Tuỳ lúc']}]},
+  {id:'m12',name:'Đồ ăn nhanh',qs:[{q:'Chuỗi bạn hay ghé nhất?',a:['KFC','Lotteria','Jollibee','Texas Chicken']},{q:'Bạn thường gọi món gì?',a:['Gà rán','Burger','Mì Ý','Khoai tây chiên']},{q:'Bạn ăn bao lâu một lần?',a:['Hằng tuần','Vài lần/tháng','Vài lần/năm','Không ăn']}]},
+  {id:'m13',name:'Ứng dụng đặt đồ ăn',qs:[{q:'Bạn hay đặt qua ứng dụng nào?',a:['ShopeeFood','GrabFood','BeFood','Gọi trực tiếp']},{q:'Điều gì khiến bạn chọn app đó?',a:['Nhiều mã giảm','Giao nhanh','Nhiều quán','Dễ dùng']},{q:'Bạn đặt đồ ăn bao lâu một lần?',a:['Hằng ngày','Vài lần/tuần','Vài lần/tháng','Hiếm khi']}]},
+  {id:'m14',name:'Sàn thương mại điện tử',qs:[{q:'Bạn hay mua trên sàn nào nhất?',a:['Shopee','TikTok Shop','Lazada','Tiki']},{q:'Quảng cáo của sàn nào nhiều nhất?',a:['Shopee','TikTok Shop','Lazada','Tiki']},{q:'Bạn quan tâm gì khi mua online?',a:['Giá rẻ','Giao nhanh','Hàng chính hãng','Dễ đổi trả']},{q:'Bạn hay mua nhóm hàng nào?',a:['Quần áo','Đồ điện tử','Mỹ phẩm','Đồ gia dụng']}]},
+  {id:'m15',name:'Ví điện tử',qs:[{q:'Bạn hay dùng ví điện tử nào?',a:['MoMo','ZaloPay','VNPAY','ShopeePay']},{q:'Bạn dùng ví để làm gì nhiều nhất?',a:['Mua sắm','Chuyển tiền','Nạp thẻ','Trả hoá đơn']},{q:'Điều gì giữ bạn ở lại với ví đó?',a:['Nhiều ưu đãi','Dễ dùng','Phổ biến','Bạn bè cùng dùng']}]},
+  {id:'m16',name:'Nhà mạng di động',qs:[{q:'Bạn đang dùng nhà mạng nào?',a:['Viettel','VinaPhone','MobiFone','Vietnamobile']},{q:'Bạn hài lòng nhất điều gì?',a:['Sóng khoẻ','Giá gói cước','Ưu đãi','Chăm sóc KH']},{q:'Bạn dùng gói cước nào?',a:['Trả trước','Trả sau','Gói data tháng','Không rõ']}]},
+  {id:'m17',name:'Điện thoại di động',qs:[{q:'Bạn đang dùng hãng nào?',a:['Samsung','iPhone','OPPO','Xiaomi']},{q:'Hãng nào quảng cáo nhiều nhất?',a:['Samsung','iPhone','OPPO','vivo']},{q:'Bạn chọn hãng nào cho máy tiếp theo?',a:['Vẫn hãng cũ','Samsung','iPhone','Chưa quyết định']}]},
+  {id:'m18',name:'Xe máy',qs:[{q:'Nhà bạn dùng xe hãng nào?',a:['Honda','Yamaha','Suzuki','VinFast']},{q:'Điều quan trọng nhất khi mua xe?',a:['Tiết kiệm xăng','Bền bỉ','Kiểu dáng','Giá bán']},{q:'Bạn quan tâm xe điện không?',a:['Rất quan tâm','Có cân nhắc','Chưa nghĩ tới','Không']},{q:'Bạn bảo dưỡng xe bao lâu?',a:['Mỗi tháng','2–3 tháng','Nửa năm','Khi hỏng mới sửa']}]},
+  {id:'m19',name:'Dầu gội và sữa tắm',qs:[{q:'Bạn hay dùng dầu gội hãng nào?',a:['Clear','Head & Shoulders','Sunsilk','Dove']},{q:'Sữa tắm nhà bạn dùng hãng nào?',a:['Lifebuoy','Dove','Enchanteur','Romano']},{q:'Bạn chọn dầu gội vì điều gì?',a:['Trị gàu','Mùi thơm','Giá','Người quen giới thiệu']}]},
+  {id:'m20',name:'Bột giặt và nước xả',qs:[{q:'Bạn dùng bột giặt hãng nào?',a:['Omo','Ariel','Surf','Lix']},{q:'Nước xả vải bạn hay dùng?',a:['Comfort','Downy','Hygiene','Không dùng']},{q:'Bạn thích dạng nào hơn?',a:['Bột giặt','Nước giặt','Viên giặt','Tuỳ lúc']},{q:'Bạn quan tâm điều gì nhất?',a:['Sạch vết bẩn','Thơm lâu','Giá','Không hại da']}]},
+  {id:'m21',name:'Nước mắm và gia vị',qs:[{q:'Nhà bạn dùng nước mắm hãng nào?',a:['Nam Ngư','Chin-su','Phú Quốc','Liên Thành']},{q:'Hạt nêm nhà bạn hay dùng?',a:['Knorr','Aji-ngon','Maggi','Không dùng']},{q:'Bạn quan tâm gì khi mua gia vị?',a:['Hương vị quen','Giá','Thương hiệu','Thành phần tự nhiên']}]},
+  {id:'m22',name:'Quảng cáo thương hiệu',qs:[{q:'Bạn thấy quảng cáo ở đâu nhiều nhất?',a:['TikTok','Facebook','YouTube','Truyền hình']},{q:'Kiểu quảng cáo nào khiến bạn nhớ?',a:['Nhạc bắt tai','Người nổi tiếng','Hài hước','Khuyến mãi rõ']},{q:'Quảng cáo ảnh hưởng tới bạn không?',a:['Ảnh hưởng nhiều','Có chút ít','Rất ít','Không hề']},{q:'Bạn khó chịu với kiểu quảng cáo nào?',a:['Quá dài','Lặp lại nhiều','Âm thanh to','Không bỏ qua được']}]},
+  {id:'m23',name:'Mỹ phẩm và chăm sóc da',qs:[{q:'Bạn dùng chăm sóc da hãng nào?',a:['Hada Labo','Cetaphil','La Roche-Posay','Simple']},{q:'Bạn quan tâm điều gì nhất?',a:['Hợp da','Giá','Thành phần','Đánh giá người dùng']},{q:'Bạn mua mỹ phẩm ở đâu?',a:['Cửa hàng mỹ phẩm','Sàn online','Siêu thị','Nhà thuốc']}]},
+  {id:'m24',name:'Mạng xã hội',qs:[{q:'Bạn dùng mạng xã hội nào nhiều nhất?',a:['Facebook','TikTok','Instagram','Zalo']},{q:'Bạn dùng để làm gì nhiều nhất?',a:['Xem giải trí','Nhắn tin','Đọc tin tức','Bán hàng']},{q:'Bạn dùng bao nhiêu giờ mỗi ngày?',a:['Dưới 1 giờ','1–3 giờ','3–5 giờ','Trên 5 giờ']}]}
+];
+
+/* ── STATE ── */
+var st={bal:0,earned:0,withdrawn:0,done:{},history:[],termsOk:false};
+function load(){
+  try{
+    var r=localStorage.getItem(KEY);
+    if(r){var o=JSON.parse(r);st.bal=+o.bal||0;st.earned=+o.earned||0;st.withdrawn=+o.withdrawn||0;st.done=o.done||{};st.history=o.history||[];st.termsOk=!!o.termsOk;}
+  }catch(e){}
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+function vnd(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.')+'₫';}
+function feeOf(a){return a<FEE_UNDER?Math.round(a*FEE_PCT):0;}
+
+var _tt;
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},2200);}
+
+/* ── REWARD LOGIC ──
+   Hoàn toàn ngẫu nhiên.
+   Mỗi lần đổi đáp án sang lựa chọn khác trong 1 khảo sát → cheatCount tăng.
+   xác suất nhận thưởng = max(5%, 75% - cheatCount×20%)
+   Nếu cheatCount > 0 → hiện CAPTCHA trước khi báo kết quả.
+*/
+function calcReward(cheatCount){
+  var prob=Math.max(0.05, 0.75-cheatCount*0.20);
+  if(Math.random()>prob) return 0;
+  return Math.floor(Math.random()*2001)+1000; // 1000–3000
+}
+
+/* ── TERMS ── */
+var TERMS=
+'<h4>QUY ĐỊNH QUAN TRỌNG — ĐỌC KỸ TRƯỚC KHI SỬ DỤNG</h4>'+
+'<h4>1. Nghiêm cấm sử dụng nhiều tài khoản — Phát hiện cùng IP</h4>'+
+'<p><span class="red">Khi hệ thống phát hiện hai tài khoản sử dụng cùng địa chỉ IP, cả hai tài khoản sẽ bị khoá vĩnh viễn ngay lập tức.</span> Toàn bộ số dư và phần thưởng sẽ bị xoá. Quyết định này là vô điều kiện và không có ngoại lệ.</p>'+
+'<h4>2. Chính sách vi phạm và khoá dịch vụ</h4>'+
+'<p><span class="red">Tài khoản vi phạm quy định sẽ bị cấm và chặn khỏi toàn bộ dịch vụ VFast vĩnh viễn ngay sau lần vi phạm đầu tiên.</span> Không khôi phục tài khoản, không hoàn trả số dư. Các hành vi vi phạm bao gồm: sử dụng bot hoặc phần mềm tự động; gửi câu trả lời không trung thực; cố tình gian lận bằng cách đổi đáp án nhiều lần; lợi dụng lỗi kỹ thuật.</p>'+
+'<h4>3. Tiêu chuẩn hoàn thành khảo sát</h4>'+
+'<p>Mỗi câu hỏi yêu cầu sự cân nhắc thực sự. Hệ thống tự động phát hiện hành vi bất thường và điều chỉnh xác suất nhận thưởng tương ứng. Vi phạm càng nhiều, xác suất nhận thưởng càng thấp — thậm chí có thể không nhận được thưởng trong nhiều khảo sát liên tiếp.</p>'+
+'<h4>4. Xác thực bảo mật</h4>'+
+'<p>Khi hệ thống phát hiện hành vi bất thường, bạn sẽ phải hoàn thành bài xác thực CAPTCHA trước khi xem kết quả. Không vượt qua CAPTCHA đồng nghĩa với việc khảo sát không được tính thưởng.</p>'+
+'<h4>5. Chính sách rút tiền</h4>'+
+'<p>Số dư tối thiểu để rút là 10.000₫. Giao dịch dưới 50.000₫ chịu phí 5%. Từ 50.000₫ trở lên miễn phí. Thời gian xử lý 1–3 ngày làm việc. VFast không chịu trách nhiệm nếu thông tin tài khoản ngân hàng không chính xác.</p>'+
+'<h4>6. Bảo mật tài khoản</h4>'+
+'<p>Người dùng có trách nhiệm bảo mật thiết bị và phiên đăng nhập của mình. VFast không chịu trách nhiệm cho các mất mát do lộ thông tin tài khoản.</p>'+
+'<h4>7. Quyền thay đổi dịch vụ</h4>'+
+'<p>VFast có quyền điều chỉnh, tạm ngừng hoặc chấm dứt bất kỳ khảo sát hoặc tính năng nào vào bất cứ lúc nào mà không cần thông báo trước.</p>'+
+'<h4>8. Tài khoản không hoạt động</h4>'+
+'<p>Tài khoản không có hoạt động trong 180 ngày liên tiếp có thể bị đình chỉ và thu hồi số dư mà không cần thông báo trước.</p>'+
+'<h4>9. Giới hạn trách nhiệm</h4>'+
+'<p>VFast không đảm bảo dịch vụ hoạt động không gián đoạn. Mọi thiệt hại từ sự cố kỹ thuật ngoài tầm kiểm soát đều không thuộc phạm vi bồi thường. Người dùng sử dụng dịch vụ theo nguyên trạng và tự chịu mọi rủi ro liên quan.</p>'+
+'<h4>10. Cập nhật điều khoản</h4>'+
+'<p>VFast bảo lưu quyền cập nhật các điều khoản bất kỳ lúc nào. Việc tiếp tục sử dụng dịch vụ sau khi điều khoản thay đổi đồng nghĩa với việc bạn chấp thuận hoàn toàn phiên bản mới nhất.</p>';
+
+function showTerms(){
+  $('termsDlg').innerHTML=
+    '<div class="dlg-top"><div class="t"><div class="t1">Điều khoản &amp; Quy định</div>'+
+    '<div class="t2">Đọc hết nội dung để tiếp tục</div></div></div>'+
+    '<div class="dlg-body">'+
+    '<div class="terms-box" id="tBox">'+TERMS+'</div>'+
+    '<div class="scroll-hint wait" id="sHint">Cuộn xuống hết để mở khoá</div>'+
+    '<div class="t-check" id="tChkWrap" style="opacity:.35;pointer-events:none">'+
+      '<input type="checkbox" id="tChk"><label for="tChk">Tôi đã đọc kỹ và đồng ý với toàn bộ điều khoản &amp; quy định của VFast, bao gồm chính sách khoá tài khoản vĩnh viễn khi vi phạm.</label>'+
+    '</div>'+
+    '<button class="btn prime" id="tBtn" disabled>Xác nhận &amp; Tiếp tục</button>'+
+    '</div>';
+
+  $('termsOv').classList.add('on');
+
+  var box=$('tBox'),hint=$('sHint'),wrap=$('tChkWrap'),chk=$('tChk'),btn=$('tBtn');
+  var unlocked=false;
+  box.addEventListener('scroll',function(){
+    if(!unlocked && box.scrollTop+box.clientHeight>=box.scrollHeight-6){
+      unlocked=true;
+      hint.textContent='Đã đọc xong — hãy tích xác nhận bên dưới';
+      hint.className='scroll-hint done';
+      wrap.style.opacity='1';
+      wrap.style.pointerEvents='auto';
+    }
+  });
+  chk.addEventListener('change',function(){btn.disabled=!this.checked;});
+  btn.addEventListener('click',function(){
+    st.termsOk=true; save();
+    $('termsOv').classList.remove('on');
+    paint();
+  });
+}
+
+/* ── MAIN PAINT ── */
+function paint(){
+  if(!st.termsOk){showTerms();return;}
+  $('balV').textContent=vnd(st.bal);
+  var doneN=Object.keys(st.done).length;
+  $('stDone').textContent=doneN+'/'+SURVEYS.length;
+  $('stEarn').textContent=vnd(st.earned);
+  $('stWd').textContent=vnd(st.withdrawn);
+  var can=st.bal>=MIN_WD;
+  $('wdBtn').disabled=!can;
+  $('wdBtn').textContent=can?'Rút '+vnd(st.bal):'Rút tiền';
+  var tag=$('balTag');
+  tag.className='bal-tag '+(can?'ready':'wait');
+  tag.textContent=can?'Sẵn sàng rút':'Đang tích luỹ';
+  var pct=Math.min(100,Math.round(st.bal/MIN_WD*100));
+  $('miFill').style.width=pct+'%';
+  if(can){var f=feeOf(st.bal);$('miNote').textContent=f>0?'Đã đạt mốc rút · thực nhận '+vnd(st.bal-f)+' sau phí 5%':'Đã đạt mốc rút · miễn phí giao dịch';}
+  else if(st.bal>0){$('miNote').textContent='Còn thiếu '+vnd(MIN_WD-st.bal)+' để rút';}
+  else{$('miNote').textContent='Hoàn thành khảo sát để tích luỹ số dư';}
+
+  var left=SURVEYS.filter(function(s){return !st.done[s.id];});
+  $('cntLeft').textContent=left.length?'Còn '+left.length:'Hết';
+
+  var box=$('grid'); box.innerHTML='';
+  if(!left.length){
+    box.innerHTML='<div class="empty"><b>Hết khảo sát rồi</b><br>Bạn đã làm xong cả 24 khảo sát.<br>Tổng cộng kiếm được <b>'+vnd(st.earned)+'</b>.</div>';
+  }
+  SURVEYS.forEach(function(s){
+    var d=document.createElement('div');
+    var rec=st.done[s.id];
+    d.className='card'+(rec?' done':'');
+    var badge=rec
+      ?(rec.paid>0?'<div class="card-badge pay">+'+vnd(rec.paid)+'</div>':'<div class="card-badge nopay">Không có</div>')
+      :'<div class="card-badge pay">Random</div>';
+    d.innerHTML=badge+'<div class="icobox">'+(ICONS[s.id]||'')+'</div>'+
+      '<div class="card-nm">'+s.name+'</div>'+
+      '<div class="card-mt">'+s.qs.length+' câu</div>';
+    if(!rec) d.onclick=function(){openSurvey(s);};
+    box.appendChild(d);
+  });
+  save();
+}
+
+/* ── SURVEY ── */
+var cur=null,qi=0,answered={},cheatCount=0,qOpenTime=0;
+
+function openSurvey(s){
+  if(st.done[s.id]) return;
+  cur=s; qi=0; answered={}; cheatCount=0;
+  $('mainOv').classList.add('on');
+  renderQ();
+}
+function closeMain(){
+  $('mainOv').classList.remove('on');
+  $('mainDlg').innerHTML='';
+  cur=null;
+}
+
+function renderQ(){
+  qOpenTime=Date.now(); // ghi thời điểm câu này hiện ra
+  var q=cur.qs[qi];
+  var steps='';
+  for(var i=0;i<cur.qs.length;i++) steps+='<i class="'+(i<=qi?'on':'')+'"></i>';
+  var opts='';
+  q.a.forEach(function(a,i){
+    opts+='<button class="opt'+(answered[qi]===i?' on':'')+'" data-i="'+i+'"><span class="dot"></span><span>'+a+'</span></button>';
+  });
+  var last=qi===cur.qs.length-1;
+  $('mainDlg').innerHTML=
+    '<div class="dlg-top"><div class="t"><div class="t1">'+cur.name+'</div>'+
+    '<div class="t2">Câu '+(qi+1)+'/'+cur.qs.length+'</div></div>'+
+    '<button class="dlg-x" id="qX">&times;</button></div>'+
+    '<div class="dlg-body"><div class="steps">'+steps+'</div>'+
+    '<div class="q-txt">'+q.q+'</div>'+
+    '<div class="opts">'+opts+'</div>'+
+    '<button class="btn prime" id="qGo" '+(answered[qi]!==undefined?'':'disabled')+'>'+
+    (last?'Gửi khảo sát':'Câu tiếp theo')+'</button></div>';
+  $('mainDlg').scrollTop=0;
+  $('qX').onclick=closeMain;
+
+  var go=$('qGo');
+  $('mainDlg').querySelectorAll('.opt').forEach(function(btn){
+    btn.onclick=function(){
+      var idx=+this.getAttribute('data-i');
+      // chọn lại đáp án khác = vi phạm
+      if(answered[qi]!==undefined && answered[qi]!==idx) cheatCount++;
+      answered[qi]=idx;
+      $('mainDlg').querySelectorAll('.opt').forEach(function(b){
+        b.classList.toggle('on',+b.getAttribute('data-i')===idx);
+      });
+      go.disabled=false;
+    };
+  });
+  go.onclick=function(){
+    if(go.disabled||answered[qi]===undefined) return;
+    // trả lời dưới 3 giây = vi phạm
+    if(Date.now()-qOpenTime < 3000) cheatCount++;
+    if(qi<cur.qs.length-1){qi++;renderQ();}
+    else submitSurvey();
+  };
+}
+
+function submitSurvey(){
+  var s=cur;
+  var cheated=cheatCount>0;
+  var reward=calcReward(cheatCount);
+
+  $('mainDlg').innerHTML=
+    '<div class="dlg-top"><div class="t"><div class="t1">Đang kiểm duyệt</div><div class="t2">'+s.name+'</div></div></div>'+
+    '<div class="dlg-body"><div class="proc">'+
+    '<div class="spinner"><svg viewBox="0 0 50 50"><circle cx="25" cy="25" r="20"></circle><circle class="arc" cx="25" cy="25" r="20"></circle></svg></div>'+
+    '<h3>Đang kiểm tra câu trả lời</h3><p>Vui lòng chờ trong giây lát...</p></div></div>';
+
+  setTimeout(function(){
+    if(cheated){
+      showCaptcha(function(){showResult(s,reward);}, function(){showResult(s,0);});
+    } else {
+      showResult(s,reward);
+    }
+  },1400);
+}
+
+/* ── CAPTCHA ── */
+function showCaptcha(onPass,onFail){
+  var a=Math.floor(Math.random()*15)+3;
+  var b=Math.floor(Math.random()*15)+3;
+  var ops=['+','-','×'];
+  var op=ops[Math.floor(Math.random()*3)];
+  var correct=op==='+'?a+b:op==='-'?a+b-b+(a):a*b; // always positive
+  if(op==='+') correct=a+b;
+  else if(op==='-'){if(a<b){var tmp=a;a=b;b=tmp;} correct=a-b;}
+  else correct=a*b;
+
+  var choices=[correct];
+  while(choices.length<4){
+    var w=correct+Math.floor(Math.random()*8)-4;
+    if(w>0 && choices.indexOf(w)<0) choices.push(w);
+  }
+  choices.sort(function(){return Math.random()-.5;});
+
+  var caps='';
+  choices.forEach(function(c){caps+='<button class="cap-opt" data-v="'+c+'">'+c+'</button>';});
+
+  $('mainDlg').innerHTML=
+    '<div class="dlg-top"><div class="t"><div class="t1">Xác thực bảo mật</div>'+
+    '<div class="t2">Hệ thống phát hiện hành vi bất thường</div></div></div>'+
+    '<div class="dlg-body">'+
+    '<div class="proc">'+
+    '<div style="width:56px;height:56px;border-radius:14px;background:rgba(200,255,61,.08);border:1.5px solid rgba(200,255,61,.25);margin:0 auto 14px;display:grid;place-items:center">'+
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c8ff3d" stroke-width="1.8" stroke-linecap="round"><path d="M12 2a5 5 0 0 1 5 5c0 2.4-1.3 4.4-3.3 5.4C16.7 13.4 19 16 19 20H5c0-3.6 2.3-6.6 5.3-7.6A5 5 0 0 1 12 2Z"/></svg>'+
+    '</div>'+
+    '<h3>Bạn có phải bot không?</h3>'+
+    '<p style="margin-bottom:18px">Giải bài toán sau để tiếp tục</p>'+
+    '<div style="font-family:var(--fd);font-size:32px;font-weight:800;letter-spacing:1px;margin-bottom:20px">'+a+' '+op+' '+b+' = ?</div>'+
+    '</div>'+
+    '<div class="cap-grid">'+caps+'</div>'+
+    '</div>';
+
+  $('mainDlg').querySelectorAll('.cap-opt').forEach(function(btn){
+    btn.onclick=function(){
+      if(+this.getAttribute('data-v')===correct) onPass();
+      else {
+        $('mainDlg').querySelector('.dlg-body').innerHTML=
+          '<div class="proc">'+
+          '<div class="check-svg"><svg viewBox="0 0 74 74"><circle class="cc no" cx="37" cy="37" r="35"></circle>'+
+          '<path class="cx" d="M27 27l20 20"></path><path class="cx" d="M47 27l-20 20"></path></svg></div>'+
+          '<h3>Xác thực thất bại</h3>'+
+          '<p>Câu trả lời không đúng.<br>Khảo sát này sẽ không được tính thưởng.</p>'+
+          '<button class="btn mute" id="capClose" style="margin-top:16px">Đóng</button></div>';
+        $('capClose').onclick=function(){onFail();};
+      }
+    };
+  });
+}
+
+/* ── RESULT ── */
+function showResult(s,reward){
+  st.done[s.id]={paid:reward,at:Date.now()};
+  if(reward>0){st.bal+=reward;st.earned+=reward;}
+  save();
+
+  if(reward>0){
+    $('mainDlg').innerHTML=
+      '<div class="dlg-top"><div class="t"><div class="t1">Hoàn thành</div><div class="t2">'+s.name+'</div></div>'+
+      '<button class="dlg-x" id="rX">&times;</button></div>'+
+      '<div class="dlg-body"><div class="proc">'+
+      '<div class="check-svg"><svg viewBox="0 0 74 74"><circle class="cc ok" cx="37" cy="37" r="35"></circle><path class="ct ok" d="M22 38l10 10 20-22"></path></svg></div>'+
+      '<h3>Cảm ơn bạn đã trả lời!</h3>'+
+      '<div class="big-amt">+'+vnd(reward)+'</div>'+
+      '<p>Số dư: <b style="color:var(--ink)">'+vnd(st.bal)+'</b></p>'+
+      '<button class="btn prime" id="rOk" style="margin-top:16px">Xong</button></div></div>';
+    toast('Nhận được '+vnd(reward));
+  } else {
+    $('mainDlg').innerHTML=
+      '<div class="dlg-top"><div class="t"><div class="t1">Kết quả</div><div class="t2">'+s.name+'</div></div>'+
+      '<button class="dlg-x" id="rX">&times;</button></div>'+
+      '<div class="dlg-body"><div class="proc">'+
+      '<div class="check-svg"><svg viewBox="0 0 74 74"><circle class="cc no" cx="37" cy="37" r="35"></circle><path class="cx" d="M27 27l20 20"></path><path class="cx" d="M47 27l-20 20"></path></svg></div>'+
+      '<h3>Không đủ điều kiện nhận thưởng</h3>'+
+      '<p>Khảo sát này đã đủ số lượng phản hồi.<br>Câu trả lời của bạn vẫn được ghi nhận.<br><br>Thử khảo sát khác nhé!</p>'+
+      '<button class="btn mute" id="rOk" style="margin-top:16px">Đã hiểu</button></div></div>';
+    toast('Lần này chưa có thưởng');
+  }
+  $('rX').onclick=function(){closeMain();paint();};
+  $('rOk').onclick=function(){closeMain();paint();};
+}
+
+/* ── WITHDRAW ── */
+$('wdBtn').onclick=function(){
+  if(st.bal<MIN_WD){toast('Tối thiểu '+vnd(MIN_WD)+' để rút');return;}
+  $('mainOv').classList.add('on');
+  renderWd();
+};
+function renderWd(){
+  var amt=st.bal,fee=feeOf(amt),net=amt-fee;
+  $('mainDlg').innerHTML=
+    '<div class="dlg-top"><div class="t"><div class="t1">Rút tiền</div><div class="t2">Số dư '+vnd(amt)+'</div></div>'+
+    '<button class="dlg-x" id="wX">&times;</button></div>'+
+    '<div class="dlg-body">'+
+    '<label class="lb">Ngân hàng</label>'+
+    '<select class="fld" id="wBank"><option value="">— Chọn ngân hàng —</option>'+
+    BANKS.map(function(b){return '<option>'+b+'</option>';}).join('')+'</select>'+
+    '<label class="lb">Số tài khoản</label>'+
+    '<input class="fld" id="wNum" inputmode="numeric" placeholder="Nhập số tài khoản" autocomplete="off">'+
+    '<label class="lb">Tên chủ tài khoản</label>'+
+    '<input class="fld" id="wName" placeholder="VIẾT IN HOA KHÔNG DẤU" autocomplete="off">'+
+    '<span class="err-msg" id="wErr"></span>'+
+    '<div class="info-rows" style="margin-top:0">'+
+      '<div class="info-row"><span class="k">Số tiền rút</span><span class="v">'+vnd(amt)+'</span></div>'+
+      '<div class="info-row"><span class="k">Phí'+(fee>0?' (5%)':'')+'</span><span class="v" style="color:'+(fee>0?'#ff5c5c':'#c8ff3d')+'">'+(fee>0?'-'+vnd(fee):'Miễn phí')+'</span></div>'+
+      '<div class="info-row" style="border-top:1px solid var(--stroke);margin-top:4px;padding-top:8px"><span class="k" style="color:var(--ink);font-weight:700">Thực nhận</span><span class="v" style="color:#c8ff3d;font-size:13px">'+vnd(net)+'</span></div>'+
+    '</div>'+
+    '<p class="hint-txt" style="margin-top:10px">Xử lý trong 1–3 ngày làm việc.</p>'+
+    '<button class="btn prime" id="wGo">Xác nhận rút '+vnd(amt)+'</button></div>';
+
+  $('wX').onclick=closeMain;
+  var num=$('wNum'),nm=$('wName'),err=$('wErr');
+  function clr(){$('wBank').classList.remove('bad');num.classList.remove('bad');nm.classList.remove('bad');err.textContent='';}
+  num.oninput=function(){this.value=this.value.replace(/\D/g,'').slice(0,19);clr();};
+  nm.oninput=function(){this.value=this.value.toUpperCase().replace(/[^A-Z\s]/g,'');clr();};
+  $('wBank').onchange=clr;
+  $('wGo').onclick=function(){
+    var bank=$('wBank').value,n=num.value.trim(),who=nm.value.trim();
+    if(!bank){$('wBank').classList.add('bad');err.textContent='Chưa chọn ngân hàng';return;}
+    if(n.length<6){num.classList.add('bad');err.textContent='Số tài khoản phải có ít nhất 6 chữ số';return;}
+    if(who.length<4||who.indexOf(' ')<0){nm.classList.add('bad');err.textContent='Nhập họ tên đầy đủ, in hoa không dấu';return;}
+    doWithdraw(bank,n,who,amt,fee,net);
+  };
+}
+function doWithdraw(bank,num,who,amt,fee,net){
+  var masked=num.length>6?num.slice(0,3)+'•'.repeat(num.length-6)+num.slice(-3):num;
+  $('mainDlg').innerHTML=
+    '<div class="dlg-top"><div class="t"><div class="t1">Đang xử lý</div><div class="t2">Không đóng cửa sổ</div></div></div>'+
+    '<div class="dlg-body"><div class="proc">'+
+    '<div class="spinner"><svg viewBox="0 0 50 50"><circle cx="25" cy="25" r="20"></circle><circle class="arc" cx="25" cy="25" r="20"></circle></svg></div>'+
+    '<h3>Đang xử lý giao dịch</h3><p>Đang chuyển <b style="color:var(--ink)">'+vnd(net)+'</b><br>tới tài khoản của bạn.</p></div></div>';
+  setTimeout(function(){
+    st.withdrawn+=amt; st.bal-=amt; save();
+    var code='RT'+Date.now().toString().slice(-8);
+    $('mainDlg').innerHTML=
+      '<div class="dlg-top"><div class="t"><div class="t1">Kết quả giao dịch</div><div class="t2">Mã '+code+'</div></div>'+
+      '<button class="dlg-x" id="wDone">&times;</button></div>'+
+      '<div class="dlg-body"><div class="proc">'+
+      '<div class="check-svg"><svg viewBox="0 0 74 74"><circle class="cc ok" cx="37" cy="37" r="35"></circle><path class="ct ok" d="M22 38l10 10 20-22"></path></svg></div>'+
+      '<h3>Thành công</h3><div class="big-amt">'+vnd(net)+'</div>'+
+      '<p>Xử lý trong 1–3 ngày làm việc.</p>'+
+      '<div class="info-rows">'+
+        '<div class="info-row"><span class="k">Ngân hàng</span><span class="v">'+bank+'</span></div>'+
+        '<div class="info-row"><span class="k">Số tài khoản</span><span class="v">'+masked+'</span></div>'+
+        '<div class="info-row"><span class="k">Chủ tài khoản</span><span class="v">'+who+'</span></div>'+
+        '<div class="info-row"><span class="k">Thực nhận</span><span class="v" style="color:#c8ff3d">'+vnd(net)+'</span></div>'+
+      '</div></div>'+
+      '<button class="btn prime" id="wOk" style="margin-top:14px">Xong</button></div>';
+    $('wDone').onclick=function(){closeMain();paint();};
+    $('wOk').onclick=function(){closeMain();paint();};
+    toast('Rút thành công');
+  },3000);
+}
+
+/* ── RESET ── */
+$('resetBtn').onclick=function(){
+  if(!confirm('Xoá toàn bộ tiến trình?')) return;
+  try{localStorage.removeItem(KEY);}catch(e){}
+  st={bal:0,earned:0,withdrawn:0,done:{},history:[],termsOk:false};
+  paint();
+  toast('Đã làm mới');
+};
+
+load();
+paint();
+})();
+</script>
+</body>
+</html>
