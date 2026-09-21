@@ -1,0 +1,3193 @@
+================================================================================
+VFAST CYBER - TOÀN BỘ MÃ NGUỒN DỰ ÁN (GỘP CHUNG 1 FILE DUY NHẤT)
+Bao gồm đầy đủ 20 link TikTok, 6 link mua sản phẩm, giao diện, và logic
+Dành riêng cho việc xem và lưu trữ thuận tiện trên điện thoại di động
+================================================================================
+
+
+================================================================================
+FILE: package.json
+================================================================================
+{
+  "name": "react-example",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port=3000 --host=0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview",
+    "clean": "rm -rf dist server.js",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^2.4.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "lucide-react": "^0.546.0",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "vite": "^8.3.0",
+    "express": "^4.21.2",
+    "dotenv": "^17.2.3",
+    "motion": "^12.23.24"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "autoprefixer": "^10.4.21",
+    "esbuild": "^0.25.0",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.21.0",
+    "typescript": "^7.0.2",
+    "@types/express": "^4.17.21"
+  }
+}
+
+
+
+
+================================================================================
+FILE: index.html
+================================================================================
+<!doctype html>
+<html lang="vi" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VFast Cyber — Nền tảng nhiệm vụ tương tác</title>
+    <meta name="description" content="Nền tảng nhiệm vụ tương tác hiện đại phong cách Cyberpunk, tích luỹ phần thưởng và rút tiền thông minh." />
+    <meta property="og:title" content="VFast Cyber — Nền tảng nhiệm vụ tương tác" />
+    <meta property="og:description" content="Nền tảng nhiệm vụ tương tác hiện đại phong cách Cyberpunk, tích luỹ phần thưởng và rút tiền thông minh." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#090a0f] text-slate-100 selection:bg-[#00FF66] selection:text-black min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+
+
+
+
+================================================================================
+FILE: vite.config.ts
+================================================================================
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import {defineConfig} from 'vite';
+
+export default defineConfig(() => {
+  return {
+    plugins: [react(), tailwindcss()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, '.'),
+      },
+    },
+    server: {
+      // HMR is disabled in AI Studio via DISABLE_HMR env var.
+      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+      hmr: process.env.DISABLE_HMR !== 'true',
+      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
+      watch: process.env.DISABLE_HMR === 'true' ? null : {},
+    },
+  };
+});
+
+
+
+
+================================================================================
+FILE: src/index.css
+================================================================================
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #090a0f;
+    color: #e2e8f0;
+    overflow-x: hidden;
+  }
+  
+  h1, h2, h3, .font-cyber {
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
+  }
+}
+
+/* Subtle, restrained cyber texture */
+.subtle-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+/* Minimal subtle green accent */
+.accent-border-subtle {
+  border-color: rgba(0, 255, 102, 0.2);
+}
+
+/* Restrained scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090a0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e222d;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2b3140;
+}
+
+
+
+
+================================================================================
+FILE: src/main.tsx
+================================================================================
+import {StrictMode} from 'react';
+import {createRoot} from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
+
+
+
+
+================================================================================
+FILE: src/data.ts
+================================================================================
+// ============================================================================
+// HỆ THỐNG CẤU HÌNH & DỮ LIỆU TẬP TRUNG (CENTRALIZED CONFIGURATION & DATA)
+// ============================================================================
+
+export const SYSTEM_CONFIG = {
+  appName: "VFast Cyber",
+  slogan: "Nền tảng nhiệm vụ tương tác",
+  subtitle: "Hoàn thành nhiệm vụ. Tích luỹ phần thưởng. Rút tiền thuận tiện.",
+  initialDemoBalance: 0, // ĐÃ SỬA: Bắt đầu từ 0đ, không còn lỗi vừa vào đã có 25k!
+  minWithdrawal: 10000,
+
+  // Danh sách liên kết TikTok mới (20 liên kết chính xác theo yêu cầu)
+  tiktokLinks: [
+    "https://vt.tiktok.com/ZSqTErTyY/",
+    "https://vt.tiktok.com/ZSqTEsEUa/",
+    "https://vt.tiktok.com/ZSqToJ327/",
+    "https://vt.tiktok.com/ZSqTE3j4K/",
+    "https://vt.tiktok.com/ZSqTEX8VR/",
+    "https://vt.tiktok.com/ZSqTEK1WP/",
+    "https://vt.tiktok.com/ZSqToLHgj/",
+    "https://vt.tiktok.com/ZSqTofv3X/",
+    "https://vt.tiktok.com/ZSqToRx9R/",
+    "https://vt.tiktok.com/ZSqToRjF7/",
+    "https://vt.tiktok.com/ZSqToSueW/",
+    "https://vt.tiktok.com/ZSqToMnXj/",
+    "https://vt.tiktok.com/ZSqToPRSb/",
+    "https://vt.tiktok.com/ZSqToBn4u/",
+    "https://vt.tiktok.com/ZSqTo5kMk/",
+    "https://vt.tiktok.com/ZSqTouba2/",
+    "https://vt.tiktok.com/ZSqTojyas/",
+    "https://vt.tiktok.com/ZSqToBvnK/",
+    "https://vt.tiktok.com/ZSqTojuAQ/",
+    "https://vt.tiktok.com/ZSqToXtaX/",
+  ],
+
+  // Danh sách liên kết YouTube: Đã làm mới xoá hết, hiện là 0 theo yêu cầu
+  youtubeLinks: [] as string[],
+
+  // 5 loại nhiệm vụ theo yêu cầu
+  taskTypes: [
+    { id: "view_3s", name: "Xem 3s", reward: 100, requiresCountdown: true },
+    { id: "follow", name: "Follow", reward: 1000, requiresCountdown: false },
+    { id: "like", name: "Tim", reward: 500, requiresCountdown: false },
+    { id: "comment", name: "Bình luận", reward: 500, requiresCountdown: false },
+    { id: "copy_link", name: "Sao chép liên kết", reward: 200, requiresCountdown: false },
+  ],
+
+  // 3 phương thức rút tiền và % phí
+  withdrawalMethods: [
+    { id: "admin", name: "Administrator", feePercent: 2.5, desc: "Xử lý thủ công ưu tiên" },
+    { id: "bot", name: "Bot", feePercent: 5.0, desc: "Giao thức tự động siêu tốc" },
+    { id: "moderator", name: "Người kiểm duyệt", feePercent: 4.0, desc: "Kiểm tra bảo mật chuẩn" },
+  ],
+
+  // Danh sách người nhận đã xác minh hợp lệ (chỉ hiển thị khi người dùng tự nhập đúng)
+  verifiedRecipients: {
+    "0326724698": "VU THI THUY",
+    "0834056036": "VU THI THUY",
+  } as Record<string, string>,
+};
+
+// ============================================================================
+// MỤC MỚI: MUA SẢN PHẨM TIKTOK SHOP NHẬN THƯỞNG
+// (Mỗi link dùng đúng 1 lần - Tiền cộng khi kiểm tra đơn mua thật ngoài đời)
+// ============================================================================
+export interface ProductPurchaseItem {
+  id: string;
+  name: string;
+  category: string;
+  link: string;
+  reward: number;
+  rewardText: string;
+  note: string;
+}
+
+export const PRODUCT_PURCHASE_TASKS: ProductPurchaseItem[] = [
+  {
+    id: "shop_prod_1",
+    name: "Sản phẩm TikTok Shop #01",
+    category: "Gia dụng & Tiện ích",
+    link: "https://vt.tiktok.com/ZS9AAYCgFNEqQ-RhJGq/",
+    reward: 15000,
+    rewardText: "Nhận 15.000₫",
+    note: "Dùng đúng 1 lần. Mua hàng thành công ngoài đời thực sẽ được admin đối soát cộng tiền.",
+  },
+  {
+    id: "shop_prod_2",
+    name: "Sản phẩm TikTok Shop #02",
+    category: "Phụ kiện & Thời trang",
+    link: "https://vt.tiktok.com/ZS9AAYbGpdk1b-UHf3N/",
+    reward: 17000,
+    rewardText: "Nhận 17.000₫",
+    note: "Dùng đúng 1 lần. Mua hàng thành công ngoài đời thực sẽ được admin đối soát cộng tiền.",
+  },
+  {
+    id: "shop_prod_3",
+    name: "Sản phẩm TikTok Shop #03",
+    category: "Công nghệ & Thiết bị",
+    link: "https://vt.tiktok.com/ZS9AAYtJnRTSE-Gx6hV/",
+    reward: 88000,
+    rewardText: "Nhận 88.000₫",
+    note: "Dùng đúng 1 lần. Mua hàng thành công ngoài đời thực sẽ được admin đối soát cộng tiền.",
+  },
+  {
+    id: "shop_prod_4",
+    name: "Sản phẩm TikTok Shop #04",
+    category: "Tiêu dùng & Bách hóa",
+    link: "https://vt.tiktok.com/ZS9AA28QJ4SdG-nO7cD/",
+    reward: 8000,
+    rewardText: "Nhận 8.000₫",
+    note: "Dùng đúng 1 lần. Mua hàng thành công ngoài đời thực sẽ được admin đối soát cộng tiền.",
+  },
+  {
+    id: "shop_prod_5",
+    name: "Sản phẩm TikTok Shop VIP #05",
+    category: "Sản phẩm Giá trị cao VIP",
+    link: "https://vt.tiktok.com/ZS9AA26ksPYMj-ej4ka/",
+    reward: 1421000,
+    rewardText: "Nhận 1.421.000₫",
+    note: "Dùng đúng 1 lần. Mua hàng thành công ngoài đời thực sẽ được admin đối soát cộng tiền.",
+  },
+  {
+    id: "shop_prod_6",
+    name: "Sản phẩm TikTok Shop VIP #06",
+    category: "Sản phẩm Giá trị cao VIP",
+    link: "https://vt.tiktok.com/ZS9AA2Ap4BNJY-fFiKD/",
+    reward: 1012000,
+    rewardText: "Nhận 1.012.000₫",
+    note: "Dùng đúng 1 lần. Mua hàng thành công ngoài đời thực sẽ được admin đối soát cộng tiền.",
+  },
+];
+
+// ============================================================================
+// DANH SÁCH NGÂN HÀNG & VÍ ĐIỆN TỬ VIỆT NAM HỖ TRỢ RÚT TIỀN
+// ============================================================================
+export interface BankOption {
+  code: string;
+  name: string;
+  shortName: string;
+  type: "bank" | "wallet";
+}
+
+export const VIETNAM_BANKS: BankOption[] = [
+  { code: "VCB", shortName: "Vietcombank", name: "Vietcombank - TMCP Ngoại Thương Việt Nam", type: "bank" },
+  { code: "MB", shortName: "MB Bank", name: "MB Bank - TMCP Quân Đội", type: "bank" },
+  { code: "TCB", shortName: "Techcombank", name: "Techcombank - TMCP Kỹ Thương Việt Nam", type: "bank" },
+  { code: "BIDV", shortName: "BIDV", name: "BIDV - TMCP Đầu Tư và Phát Triển Việt Nam", type: "bank" },
+  { code: "CTG", shortName: "VietinBank", name: "VietinBank - TMCP Công Thương Việt Nam", type: "bank" },
+  { code: "ACB", shortName: "ACB", name: "ACB - TMCP Á Châu", type: "bank" },
+  { code: "VPB", shortName: "VPBank", name: "VPBank - TMCP Việt Nam Thịnh Vượng", type: "bank" },
+  { code: "TPB", shortName: "TPBank", name: "TPBank - TMCP Tiên Phong", type: "bank" },
+  { code: "STB", shortName: "Sacombank", name: "Sacombank - TMCP Sài Gòn Thương Tín", type: "bank" },
+  { code: "HDB", shortName: "HDBank", name: "HDBank - TMCP Phát Triển TP.HCM", type: "bank" },
+  { code: "VIB", shortName: "VIB", name: "VIB - TMCP Quốc Tế Việt Nam", type: "bank" },
+  { code: "SHB", shortName: "SHB", name: "SHB - TMCP Sài Gòn - Hà Nội", type: "bank" },
+  { code: "AGR", shortName: "Agribank", name: "Agribank - Ngân Hàng Nông Nghiệp & PTNT", type: "bank" },
+  { code: "MSB", shortName: "MSB", name: "MSB - TMCP Hàng Hải Việt Nam", type: "bank" },
+  { code: "OCB", shortName: "OCB", name: "OCB - TMCP Phương Đông", type: "bank" },
+  { code: "SEAB", shortName: "SeABank", name: "SeABank - TMCP Đông Nam Á", type: "bank" },
+  { code: "LPB", shortName: "LPBank", name: "LPBank - TMCP Lộc Phát Việt Nam", type: "bank" },
+  { code: "MOMO", shortName: "Ví MoMo", name: "Ví điện tử MoMo", type: "wallet" },
+  { code: "ZALOPAY", shortName: "Ví ZaloPay", name: "Ví điện tử ZaloPay", type: "wallet" },
+  { code: "VIETTELMONEY", shortName: "Viettel Money", name: "Viettel Money", type: "wallet" },
+];
+
+// ============================================================================
+// 10 ĐIỀU KHOẢN QUY ĐỊNH
+// ============================================================================
+export const TERMS_SECTIONS = [
+  {
+    num: "1",
+    title: "Nghiêm cấm sử dụng nhiều tài khoản — Phát hiện cùng IP",
+    content: "Khi hệ thống phát hiện hai tài khoản sử dụng cùng địa chỉ IP, cả hai bị khoá vĩnh viễn ngay lập tức. Toàn bộ số dư và phần thưởng sẽ bị xoá. Quyết định này vô điều kiện và không có ngoại lệ.",
+  },
+  {
+    num: "2",
+    title: "Chính sách vi phạm và khoá dịch vụ",
+    content: "Tài khoản vi phạm sẽ bị cấm và chặn khỏi toàn bộ dịch vụ VFast vĩnh viễn ngay sau lần vi phạm đầu tiên. Không khôi phục tài khoản, không hoàn trả số dư. Vi phạm bao gồm: sử dụng bot hoặc phần mềm tự động; trả lời quá nhanh bất thường; lợi dụng lỗi kỹ thuật.",
+  },
+  {
+    num: "3",
+    title: "Tiêu chuẩn hoàn thành khảo sát",
+    content: "Mỗi câu hỏi yêu cầu tối thiểu 3 giây cân nhắc. Hệ thống tự động phát hiện hành vi bất thường. Khi phát hiện, bạn phải vượt qua CAPTCHA xác thực — nếu thất bại, khảo sát không được tính thưởng.",
+  },
+  {
+    num: "4",
+    title: "Chính sách rút tiền",
+    content: "Số dư tối thiểu để rút là 10.000₫. Dưới 50.000₫ chịu phí theo phương thức đã chọn. Xử lý 1–3 ngày làm việc.",
+  },
+  {
+    num: "5",
+    title: "Bảo mật tài khoản",
+    content: "Người dùng tự chịu trách nhiệm bảo mật thiết bị và phiên đăng nhập. VFast không chịu trách nhiệm cho mất mát do lộ thông tin.",
+  },
+  {
+    num: "6",
+    title: "Phần thưởng khảo sát",
+    content: "Phần thưởng hoàn toàn ngẫu nhiên, không cố định. VFast không đảm bảo mỗi khảo sát đều có thưởng. Kết quả phụ thuộc vào hệ thống xác minh tự động.",
+  },
+  {
+    num: "7",
+    title: "Quyền thay đổi dịch vụ",
+    content: "VFast có quyền điều chỉnh, tạm ngừng hoặc chấm dứt bất kỳ khảo sát hoặc tính năng nào vào bất kỳ lúc nào mà không cần thông báo trước.",
+  },
+  {
+    num: "8",
+    title: "Tài khoản không hoạt động",
+    content: "Tài khoản không hoạt động trong 180 ngày liên tiếp có thể bị đình chỉ và thu hồi số dư mà không cần thông báo.",
+  },
+  {
+    num: "9",
+    title: "Giới hạn trách nhiệm",
+    content: "VFast không đảm bảo dịch vụ hoạt động không gián đoạn. Thiệt hại từ sự cố kỹ thuật ngoài tầm kiểm soát không thuộc phạm vi bồi thường.",
+  },
+  {
+    num: "10",
+    title: "Cập nhật điều khoản",
+    content: "VFast bảo lưu quyền cập nhật điều khoản bất kỳ lúc nào. Tiếp tục sử dụng dịch vụ đồng nghĩa chấp thuận phiên bản mới nhất.",
+  },
+];
+
+// ============================================================================
+// HỆ THỐNG TỰ ĐỘNG KHÓA THEO GIỜ QUY ĐỊNH
+// Yêu cầu: Khóa vào 21h30 các ngày Thứ 2, 3, 5, 6, 7; các ngày còn lại (Thứ 4, CN) là 22h00
+// Mở cửa trở lại lúc 06:00 sáng
+// ============================================================================
+export interface LockStatusResult {
+  isLocked: boolean;
+  isEarlyLockDay: boolean; // Thứ 2, 3, 5, 6, 7 (21:30)
+  currentDayName: string;
+  currentDayIndex: number;
+  lockTimeString: string;
+  unlockTimeString: string;
+  vnTimeString: string;
+  vnDateString: string;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  remainingSecondsToUnlock?: number;
+}
+
+export function calculateLockStatus(date = new Date()): LockStatusResult {
+  try {
+    // Chuyển đổi sang múi giờ Việt Nam ICT (Asia/Ho_Chi_Minh - UTC+7)
+    const vnTimeStr = date.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" });
+    const vnDate = new Date(vnTimeStr);
+
+    const day = vnDate.getDay(); // 0 = Chủ nhật, 1 = Thứ 2, 2 = Thứ 3, 3 = Thứ 4, 4 = Thứ 5, 5 = Thứ 6, 6 = Thứ 7
+    const hours = vnDate.getHours();
+    const minutes = vnDate.getMinutes();
+    const seconds = vnDate.getSeconds();
+    const currentTotalMinutes = hours * 60 + minutes;
+
+    // Ngày khóa 21h30: Thứ 2 (1), Thứ 3 (2), Thứ 5 (4), Thứ 6 (5), Thứ 7 (6)
+    // Ngày khóa 22h00: Thứ 4 (3), Chủ Nhật (0)
+    const isEarlyLockDay = [1, 2, 4, 5, 6].includes(day);
+    const lockMinutes = isEarlyLockDay ? 21 * 60 + 30 : 22 * 60; // 21:30 = 1290p, 22:00 = 1320p
+    const unlockMinutes = 6 * 60; // 06:00 sáng = 360p
+
+    // Đang trong khung giờ khóa: Sau giờ đóng cửa (>= lockMinutes) HOẶC trước giờ mở cửa sáng (< unlockMinutes)
+    const isLocked = currentTotalMinutes >= lockMinutes || currentTotalMinutes < unlockMinutes;
+
+    const dayNames = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+
+    return {
+      isLocked,
+      isEarlyLockDay,
+      currentDayName: dayNames[day],
+      currentDayIndex: day,
+      lockTimeString: isEarlyLockDay ? "21:30" : "22:00",
+      unlockTimeString: "06:00",
+      vnTimeString: `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`,
+      vnDateString: `${String(vnDate.getDate()).padStart(2, "0")}/${String(vnDate.getMonth() + 1).padStart(2, "0")}/${vnDate.getFullYear()}`,
+      hours,
+      minutes,
+      seconds,
+    };
+  } catch (e) {
+    // Fallback chuẩn nếu môi trường không hỗ trợ timeZone
+    const day = date.getDay();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    const currentTotalMinutes = hours * 60 + minutes;
+    const isEarlyLockDay = [1, 2, 4, 5, 6].includes(day);
+    const lockMinutes = isEarlyLockDay ? 21 * 60 + 30 : 22 * 60;
+    const unlockMinutes = 6 * 60;
+    const isLocked = currentTotalMinutes >= lockMinutes || currentTotalMinutes < unlockMinutes;
+    const dayNames = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+
+    return {
+      isLocked,
+      isEarlyLockDay,
+      currentDayName: dayNames[day],
+      currentDayIndex: day,
+      lockTimeString: isEarlyLockDay ? "21:30" : "22:00",
+      unlockTimeString: "06:00",
+      vnTimeString: `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`,
+      vnDateString: `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`,
+      hours,
+      minutes,
+      seconds,
+    };
+  }
+}
+
+
+
+
+================================================================================
+FILE: src/App.tsx
+================================================================================
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  SYSTEM_CONFIG,
+  TERMS_SECTIONS,
+  VIETNAM_BANKS,
+  calculateLockStatus,
+  LockStatusResult,
+  BankOption,
+  PRODUCT_PURCHASE_TASKS,
+  ProductPurchaseItem,
+} from "./data";
+
+// ============================================================================
+// ĐỊNH NGHĨA KIỂU DỮ LIỆU
+// ============================================================================
+export type PlatformType = "tiktok" | "youtube";
+export type TaskStatus = "available" | "processing" | "completed" | "failed";
+export type WithdrawalStatus = "success" | "processing" | "failed";
+
+export interface TaskItem {
+  id: string;
+  platform: PlatformType;
+  link: string;
+  taskTypeId: string;
+  taskTypeName: string;
+  reward: number;
+  requiresCountdown: boolean;
+  status: TaskStatus;
+  completedAt?: string;
+  isDuplicate?: boolean;
+}
+
+// Kiểu dữ liệu trạng thái đơn mua sản phẩm TikTok Shop
+export interface UserProductPurchaseState {
+  productId: string;
+  status: "available" | "pending_verification" | "completed";
+  clickedAt?: string;
+  verifiedAt?: string;
+  orderCode?: string;
+}
+
+export interface WithdrawalRecord {
+  id: string;
+  timestamp: string;
+  amount: number;
+  fee: number;
+  netAmount: number;
+  methodName: string;
+  bankCode: string;
+  bankName: string;
+  recipientName: string;
+  accountNumber: string;
+  status: WithdrawalStatus;
+}
+
+export interface ToastNotification {
+  id: string;
+  type: "success" | "info" | "warning" | "error";
+  title: string;
+  message: string;
+}
+
+// ============================================================================
+// HỆ THỐNG SVG ICON TỰ TẠO (CUSTOM SVG - KHÔNG DÙNG ICON PACK NGOÀI)
+// ============================================================================
+const Icons = {
+  ShoppingBag: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+      <path d="M3 6h18" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+  ),
+  Cart: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="21" r="1" />
+      <circle cx="19" cy="21" r="1" />
+      <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+    </svg>
+  ),
+  Logo: () => (
+    <svg className="w-7 h-7" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="24" height="24" rx="6" fill="#11141c" stroke="#222734" strokeWidth="1.5" />
+      <path d="M7 9L14 20L21 9" stroke="#00FF66" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="14" cy="9" r="1.5" fill="#FFFFFF" />
+    </svg>
+  ),
+  Home: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  ),
+  Task: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  ),
+  Withdraw: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <line x1="2" y1="10" x2="22" y2="10" />
+      <circle cx="7" cy="15" r="1" fill="currentColor" />
+    </svg>
+  ),
+  History: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <polyline points="12 7 12 12 15 14" />
+    </svg>
+  ),
+  User: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  ),
+  TikTok: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.86.12V9.41a6.33 6.33 0 0 0-.86-.06A6.34 6.34 0 0 0 3.1 15.69a6.34 6.34 0 0 0 10.82 4.48c.19-.19.36-.4.5-.62V11.2a8.28 8.28 0 0 0 5.17 1.83V9.58a4.84 4.84 0 0 1 0-2.89z" />
+    </svg>
+  ),
+  YouTube: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+    </svg>
+  ),
+  CheckCircle: () => (
+    <svg className="w-4 h-4 text-[#00FF66]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  ),
+  Copy: () => (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  ),
+  Shield: () => (
+    <svg className="w-4 h-4 text-[#00FF66]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  ),
+  AlertCircle: () => (
+    <svg className="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+  ),
+  Close: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  ),
+  Menu: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="4" y1="12" x2="20" y2="12" />
+      <line x1="4" y1="18" x2="20" y2="18" />
+    </svg>
+  ),
+  Spinner: () => (
+    <svg className="animate-spin w-4 h-4 text-black" viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+    </svg>
+  ),
+  Download: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  ),
+  Lock: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  ),
+  Globe: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+  ),
+  Clock: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  ),
+  Bank: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="3" y1="21" x2="21" y2="21" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+      <polyline points="5 6 12 3 19 6" />
+      <line x1="4" y1="10" x2="4" y2="21" />
+      <line x1="20" y1="10" x2="20" y2="21" />
+      <line x1="8" y1="14" x2="8" y2="17" />
+      <line x1="12" y1="14" x2="12" y2="17" />
+      <line x1="16" y1="14" x2="16" y2="17" />
+    </svg>
+  ),
+  Refresh: () => (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 2v6h-6" />
+      <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+      <path d="M3 22v-6h6" />
+      <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+    </svg>
+  ),
+  External: () => (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      <polyline points="15 3 21 3 21 9" />
+      <line x1="10" y1="14" x2="21" y2="3" />
+    </svg>
+  ),
+  Code: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </svg>
+  ),
+};
+
+export default function App() {
+  // Navigation State
+  const [currentTab, setCurrentTab] = useState<"home" | "tasks" | "products" | "withdraw" | "history" | "account">("home");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Trạng thái modal tải / xem toàn bộ code gộp
+  const [showAllCodeModal, setShowAllCodeModal] = useState(false);
+  const [allCodeText, setAllCodeText] = useState<string>("");
+
+  // ==========================================================================
+  // 1. IP DETECTION & REALTIME NETWORK INFO
+  // ==========================================================================
+  const [clientIp, setClientIp] = useState<string>("118.70.192.44");
+  const [ipStatus, setIpStatus] = useState<"checking" | "verified">("checking");
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch("https://api.ipify.org?format=json")
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && data.ip) {
+          setClientIp(data.ip);
+          setIpStatus("verified");
+        }
+      })
+      .catch(() => {
+        fetch("https://api64.ipify.org?format=json")
+          .then((res) => res.json())
+          .then((data) => {
+            if (isMounted && data.ip) {
+              setClientIp(data.ip);
+              setIpStatus("verified");
+            }
+          })
+          .catch(() => {
+            if (isMounted) {
+              setClientIp("118.70.192.44");
+              setIpStatus("verified");
+            }
+          });
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // ==========================================================================
+  // 2. TỰ ĐỘNG KHÓA THEO GIỜ QUY ĐỊNH (21h30 Thứ 2,3,5,6,7; 22h00 các ngày còn lại)
+  // ==========================================================================
+  const [lockInfo, setLockInfo] = useState<LockStatusResult>(() => calculateLockStatus());
+  const [bypassLock, setBypassLock] = useState<boolean>(() => {
+    return localStorage.getItem("vfast_bypass_lock") === "true";
+  });
+  const [simulateLockMode, setSimulateLockMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLockInfo(calculateLockStatus());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const isCurrentlyLocked = (lockInfo.isLocked || simulateLockMode) && !bypassLock;
+
+  // ==========================================================================
+  // 3. SỬA LỖI SỐ DƯ: BẮT ĐẦU TỪ 0đ (KHÔNG CÒN TỰ ĐỘNG CÓ 25K)
+  // ==========================================================================
+  const [balance, setBalance] = useState<number>(() => {
+    const saved = localStorage.getItem("vfast_balance");
+    // Nếu chưa lưu hoặc đang lưu giá trị 25000 của phiên bản cũ -> đưa về 0đ
+    if (saved === null || saved === "25000") {
+      return 0;
+    }
+    const parsed = parseInt(saved, 10);
+    return isNaN(parsed) ? 0 : parsed;
+  });
+
+  // Modal Điều khoản
+  const [hasAgreedTerms, setHasAgreedTerms] = useState<boolean>(() => {
+    return localStorage.getItem("vfast_agreed_terms") === "true";
+  });
+  const [tempTermsChecked, setTempTermsChecked] = useState(false);
+
+  // Khởi tạo danh sách nhiệm vụ từ cấu hình (20 link TikTok mới, YouTube xoá hết = 0)
+  const [tasks, setTasks] = useState<TaskItem[]>(() => {
+    const items: TaskItem[] = [];
+    const seenTikTok = new Set<string>();
+
+    SYSTEM_CONFIG.tiktokLinks.forEach((link, idx) => {
+      const isDupe = seenTikTok.has(link);
+      seenTikTok.add(link);
+      SYSTEM_CONFIG.taskTypes.forEach((type) => {
+        items.push({
+          id: `tt_${idx}_${type.id}`,
+          platform: "tiktok",
+          link,
+          taskTypeId: type.id,
+          taskTypeName: type.name,
+          reward: type.reward,
+          requiresCountdown: type.requiresCountdown,
+          status: "available",
+          isDuplicate: isDupe,
+        });
+      });
+    });
+
+    SYSTEM_CONFIG.youtubeLinks.forEach((link, idx) => {
+      SYSTEM_CONFIG.taskTypes.forEach((type) => {
+        items.push({
+          id: `yt_${idx}_${type.id}`,
+          platform: "youtube",
+          link,
+          taskTypeId: type.id,
+          taskTypeName: type.name,
+          reward: type.reward,
+          requiresCountdown: type.requiresCountdown,
+          status: "available",
+          isDuplicate: false,
+        });
+      });
+    });
+
+    // Nếu có nhiệm vụ đã hoàn thành trước đó theo đúng link và loại nhiệm vụ
+    const saved = localStorage.getItem("vfast_tasks_v5");
+    if (saved) {
+      try {
+        const parsed: TaskItem[] = JSON.parse(saved);
+        return items.map((item) => {
+          const old = parsed.find((p) => p.link === item.link && p.taskTypeId === item.taskTypeId);
+          if (old && old.status === "completed") {
+            return { ...item, status: "completed", completedAt: old.completedAt };
+          }
+          return item;
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    return items;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("vfast_tasks_v5", JSON.stringify(tasks));
+  }, [tasks]);
+
+  // ==========================================================================
+  // MỤC MỚI: MUA SẢN PHẨM TIKTOK SHOP
+  // Mỗi link dùng đúng 1 lần.
+  // Khi ấn vào rồi quay lại: KHÔNG TÍNH NGAY (chừng nào mua thật admin sẽ cộng tiền ở ngoài)
+  // ==========================================================================
+  const [productPurchases, setProductPurchases] = useState<UserProductPurchaseState[]>(() => {
+    const saved = localStorage.getItem("vfast_product_purchases_v1");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return PRODUCT_PURCHASE_TASKS.map((p) => ({
+      productId: p.id,
+      status: "available",
+    }));
+  });
+
+  useEffect(() => {
+    localStorage.setItem("vfast_product_purchases_v1", JSON.stringify(productPurchases));
+  }, [productPurchases]);
+
+  // Bộ lọc sản phẩm
+  const [productCategoryFilter, setProductCategoryFilter] = useState<string>("all");
+
+  // Task Filter State
+  const [taskPlatform, setTaskPlatform] = useState<PlatformType>("tiktok");
+  const [taskTypeFilter, setTaskTypeFilter] = useState<string>("all");
+  const [activeCountdown, setActiveCountdown] = useState<{ taskId: string; secondsLeft: number } | null>(null);
+  const [processingTaskId, setProcessingTaskId] = useState<string | null>(null);
+
+  // ==========================================================================
+  // 4. FORM RÚT TIỀN: BỔ SUNG CHỌN NGÂN HÀNG & MẶC ĐỊNH RỖNG 100%
+  // ==========================================================================
+  const [selectedBankCode, setSelectedBankCode] = useState<string>(""); // RỖNG MẶC ĐỊNH
+  const [withdrawAmount, setWithdrawAmount] = useState<string>(""); // RỖNG MẶC ĐỊNH
+  const [recipientAccount, setRecipientAccount] = useState<string>(""); // RỖNG MẶC ĐỊNH
+  const [selectedMethodId, setSelectedMethodId] = useState<string>("admin");
+  const [isSubmittingWithdraw, setIsSubmittingWithdraw] = useState<boolean>(false);
+
+  // Lịch sử rút tiền
+  const [withdrawals, setWithdrawals] = useState<WithdrawalRecord[]>(() => {
+    const saved = localStorage.getItem("vfast_withdrawals");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return [];
+  });
+
+  // Modal kết quả rút tiền & Canvas Bill
+  const [successReceipt, setSuccessReceipt] = useState<WithdrawalRecord | null>(null);
+
+  // Toast notification
+  const [toasts, setToasts] = useState<ToastNotification[]>([]);
+
+  // Lưu trữ cục bộ
+  useEffect(() => {
+    localStorage.setItem("vfast_agreed_terms", String(hasAgreedTerms));
+  }, [hasAgreedTerms]);
+
+  useEffect(() => {
+    localStorage.setItem("vfast_balance", String(balance));
+  }, [balance]);
+
+  useEffect(() => {
+    localStorage.setItem("vfast_tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  useEffect(() => {
+    localStorage.setItem("vfast_withdrawals", JSON.stringify(withdrawals));
+  }, [withdrawals]);
+
+  useEffect(() => {
+    localStorage.setItem("vfast_bypass_lock", String(bypassLock));
+  }, [bypassLock]);
+
+  // Toast Helper
+  const showToast = (title: string, message: string, type: "success" | "info" | "warning" | "error" = "success") => {
+    const id = Date.now().toString();
+    setToasts((prev) => [...prev, { id, title, message, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 3500);
+  };
+
+  // Format VND
+  const formatVND = (num: number) => {
+    return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(num);
+  };
+
+  // Xác minh người nhận
+  const recipientVerification = useMemo(() => {
+    const trimmed = recipientAccount.trim();
+    if (!trimmed) {
+      return { status: "empty", name: "Chưa xác minh" };
+    }
+    const matched = SYSTEM_CONFIG.verifiedRecipients[trimmed];
+    if (matched) {
+      return { status: "verified", name: matched };
+    }
+    return { status: "unverified", name: "Chưa xác minh danh tính" };
+  }, [recipientAccount]);
+
+  // Ngân hàng đang chọn
+  const currentBank = useMemo(() => {
+    return VIETNAM_BANKS.find((b) => b.code === selectedBankCode);
+  }, [selectedBankCode]);
+
+  // Phương thức rút tiền đang chọn
+  const currentMethod = useMemo(() => {
+    return SYSTEM_CONFIG.withdrawalMethods.find((m) => m.id === selectedMethodId) || SYSTEM_CONFIG.withdrawalMethods[0];
+  }, [selectedMethodId]);
+
+  // Tính toán phí và thực nhận
+  const numericAmount = parseInt(withdrawAmount, 10) || 0;
+  const calculatedFee = Math.round((numericAmount * currentMethod.feePercent) / 100);
+  const calculatedNet = Math.max(0, numericAmount - calculatedFee);
+
+  // Countdown handler cho nhiệm vụ "Xem 3s"
+  useEffect(() => {
+    if (!activeCountdown) return;
+
+    if (activeCountdown.secondsLeft <= 0) {
+      const taskId = activeCountdown.taskId;
+      setActiveCountdown(null);
+      setProcessingTaskId(null);
+      finishTask(taskId);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setActiveCountdown((prev) => (prev ? { ...prev, secondsLeft: prev.secondsLeft - 1 } : null));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [activeCountdown]);
+
+  // Xử lý thực hiện nhiệm vụ
+  const handleExecuteTask = (task: TaskItem) => {
+    if (!hasAgreedTerms) {
+      showToast("Chưa xác nhận điều khoản", "Vui lòng chấp thuận quy định VFast Cyber trước khi làm nhiệm vụ.", "warning");
+      return;
+    }
+
+    if (task.status === "completed") {
+      showToast("Đã hoàn thành", "Nhiệm vụ này đã được nhận thưởng trước đó.", "info");
+      return;
+    }
+
+    window.open(task.link, "_blank");
+
+    setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, status: "processing" } : t)));
+    setProcessingTaskId(task.id);
+
+    if (task.taskTypeId === "view_3s" || task.requiresCountdown) {
+      setActiveCountdown({ taskId: task.id, secondsLeft: 3 });
+      showToast("Đang kiểm tra 3 giây", "Vui lòng xem tối thiểu 3 giây để hệ thống tự động xác nhận và nhận thưởng.", "info");
+      return;
+    }
+
+    setTimeout(() => {
+      finishTask(task.id);
+      setProcessingTaskId(null);
+    }, 1200);
+  };
+
+  const finishTask = (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    const now = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === taskId
+          ? {
+              ...t,
+              status: "completed",
+              completedAt: now,
+            }
+          : t
+      )
+    );
+
+    setBalance((prev) => prev + task.reward);
+    showToast("Hoàn thành nhiệm vụ", `+${formatVND(task.reward)} đã được cộng vào số dư.`, "success");
+  };
+
+  const handleCopyLink = (task: TaskItem, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(task.link);
+    showToast("Đã sao chép link", task.link, "info");
+    handleExecuteTask(task);
+  };
+
+  // ==========================================================================
+  // XỬ LÝ MỤC MỚI: MUA SẢN PHẨM TIKTOK SHOP
+  // - Mỗi link dùng đúng 1 lần
+  // - Ấn vào rồi quay lại: KHÔNG TỰ ĐỘNG CỘNG TIỀN NGAY
+  // - Chừng nào mua thật: Admin sẽ đối soát và cộng tiền ở ngoài
+  // ==========================================================================
+  const handleOpenProductPurchase = (product: ProductPurchaseItem) => {
+    if (!hasAgreedTerms) {
+      showToast("Chưa xác nhận điều khoản", "Vui lòng chấp thuận quy định VFast Cyber trước khi tham gia.", "warning");
+      return;
+    }
+
+    const current = productPurchases.find((p) => p.productId === product.id);
+    if (current && current.status !== "available") {
+      showToast(
+        "Liên kết đã được sử dụng",
+        `Mỗi liên kết chỉ được thực hiện đúng 1 lần. Trạng thái: ${
+          current.status === "completed"
+            ? "Đã xác nhận mua thật & cộng tiền xong"
+            : "Đang chờ admin đối soát đơn mua thật ngoài đời"
+        }.`,
+        "warning"
+      );
+      return;
+    }
+
+    // Mở trang sản phẩm trên TikTok Shop
+    window.open(product.link, "_blank", "noopener,noreferrer");
+
+    // Ghi nhận trạng thái: Đã click mở link (chờ đối soát đơn mua thật)
+    // TUYỆT ĐỐI KHÔNG CỘNG TIỀN VÀO BALANCE!
+    const nowStr = new Date().toLocaleString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    setProductPurchases((prev) =>
+      prev.map((p) =>
+        p.productId === product.id
+          ? {
+              ...p,
+              status: "pending_verification",
+              clickedAt: nowStr,
+            }
+          : p
+      )
+    );
+
+    showToast(
+      "Đã mở TikTok Shop",
+      `LƯU Ý: Hệ thống KHÔNG tự động cộng tiền khi quay lại. Tiền thưởng (${product.rewardText}) sẽ được Admin kiểm tra đơn mua thật ngoài đời rồi mới cộng vào tài khoản.`,
+      "info"
+    );
+  };
+
+  // Quản trị viên đối soát đơn mua thật và duyệt cộng tiền ở ngoài
+  const handleAdminApproveProduct = (product: ProductPurchaseItem) => {
+    const current = productPurchases.find((p) => p.productId === product.id);
+    if (current?.status === "completed") {
+      showToast("Đã duyệt trước đó", "Sản phẩm này đã được cộng tiền hoàn tất.", "info");
+      return;
+    }
+
+    // Cộng tiền thưởng vào số dư
+    setBalance((prev) => {
+      const updated = prev + product.reward;
+      localStorage.setItem("vfast_balance", updated.toString());
+      return updated;
+    });
+
+    const nowStr = new Date().toLocaleString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    setProductPurchases((prev) =>
+      prev.map((p) =>
+        p.productId === product.id
+          ? {
+              ...p,
+              status: "completed",
+              verifiedAt: nowStr,
+            }
+          : p
+      )
+    );
+
+    showToast(
+      "Đã duyệt & Cộng tiền thành công!",
+      `Xác nhận đơn mua thật: Đã cộng +${formatVND(product.reward)} vào số dư của bạn.`,
+      "success"
+    );
+  };
+
+  // Reset trạng thái sản phẩm về khả dụng (dành cho quản trị viên hoặc kiểm thử)
+  const handleResetProductStatus = (productId: string) => {
+    setProductPurchases((prev) =>
+      prev.map((p) =>
+        p.productId === productId
+          ? {
+              ...p,
+              status: "available",
+              clickedAt: undefined,
+              verifiedAt: undefined,
+              orderCode: undefined,
+            }
+          : p
+      )
+    );
+    showToast("Đã khôi phục liên kết", "Liên kết sản phẩm đã có thể được sử dụng lại.", "info");
+  };
+
+  // Lưu mã đơn hàng TikTok (để tiện đối soát ngoài đời)
+  const handleUpdateProductOrderCode = (productId: string, code: string) => {
+    setProductPurchases((prev) =>
+      prev.map((p) => (p.productId === productId ? { ...p, orderCode: code } : p))
+    );
+  };
+
+  // Xác nhận rút tiền
+  const handleConfirmWithdrawal = () => {
+    if (!hasAgreedTerms) {
+      showToast("Chưa xác nhận điều khoản", "Vui lòng đồng ý điều khoản trước khi rút tiền.", "warning");
+      return;
+    }
+
+    if (!selectedBankCode) {
+      showToast("Thiếu ngân hàng", "Vui lòng chọn ngân hàng hoặc ví điện tử nhận tiền.", "warning");
+      return;
+    }
+
+    if (!recipientAccount.trim()) {
+      showToast("Thiếu số tài khoản", "Vui lòng nhập số điện thoại hoặc số tài khoản nhận tiền.", "warning");
+      return;
+    }
+
+    if (numericAmount < SYSTEM_CONFIG.minWithdrawal) {
+      showToast("Số tiền không hợp lệ", `Số tiền rút tối thiểu là ${formatVND(SYSTEM_CONFIG.minWithdrawal)}.`, "warning");
+      return;
+    }
+
+    if (numericAmount > balance) {
+      showToast("Số dư không đủ", "Số tiền yêu cầu vượt quá số dư khả dụng hiện tại.", "warning");
+      return;
+    }
+
+    setIsSubmittingWithdraw(true);
+
+    setTimeout(() => {
+      const txId = `VFC-${Math.floor(100000 + Math.random() * 900000)}`;
+      const now = new Date().toLocaleString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      const recipientDisplayName =
+        recipientVerification.status === "verified" ? recipientVerification.name : "Tài khoản nhận tiền";
+
+      const bankDisplayName = currentBank ? currentBank.shortName : "Ngân hàng";
+
+      const newRecord: WithdrawalRecord = {
+        id: txId,
+        timestamp: now,
+        amount: numericAmount,
+        fee: calculatedFee,
+        netAmount: calculatedNet,
+        methodName: `${currentMethod.name} (${currentMethod.feePercent}%)`,
+        bankCode: selectedBankCode,
+        bankName: bankDisplayName,
+        recipientName: recipientDisplayName,
+        accountNumber: recipientAccount.trim(),
+        status: "success",
+      };
+
+      setBalance((prev) => prev - numericAmount);
+      setWithdrawals((prev) => [newRecord, ...prev]);
+      setIsSubmittingWithdraw(false);
+      setSuccessReceipt(newRecord);
+
+      // Reset form sạch sẽ sau khi hoàn tất
+      setSelectedBankCode("");
+      setWithdrawAmount("");
+      setRecipientAccount("");
+
+      showToast("Tạo lệnh rút tiền thành công", `Mã giao dịch: ${txId}`, "success");
+    }, 1200);
+  };
+
+  // Xuất ảnh Bill qua Canvas sạch, sắc nét, có thông tin Ngân hàng
+  const handleDownloadBill = (receipt: WithdrawalRecord) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 720;
+    canvas.height = 960;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // 1. Nền tối đơn giản #0e1117
+    ctx.fillStyle = "#0e1117";
+    ctx.fillRect(0, 0, 720, 960);
+
+    // 2. Viền tối giản thanh lịch #222734
+    ctx.strokeStyle = "#222734";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(24, 24, 672, 912);
+
+    // Điểm nhấn viền xanh mảnh ở góc trên
+    ctx.strokeStyle = "#00FF66";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(24, 60);
+    ctx.lineTo(24, 24);
+    ctx.lineTo(60, 24);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(660, 24);
+    ctx.lineTo(696, 24);
+    ctx.lineTo(696, 60);
+    ctx.stroke();
+
+    // 3. Header Logo & Title
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 26px -apple-system, sans-serif";
+    ctx.fillText("VFast", 50, 75);
+    ctx.fillStyle = "#00FF66";
+    ctx.fillText("Cyber", 130, 75);
+
+    ctx.fillStyle = "#64748b";
+    ctx.font = "13px -apple-system, sans-serif";
+    ctx.fillText("HỆ THỐNG GIAO DỊCH TƯƠNG TÁC THẾ HỆ MỚI", 50, 100);
+
+    // Huy hiệu chứng nhận
+    ctx.fillStyle = "#1e2430";
+    ctx.fillRect(490, 52, 170, 32);
+    ctx.fillStyle = "#00FF66";
+    ctx.font = "bold 12px -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("VFAST VERIFIED", 575, 72);
+
+    // Đường kẻ phân tách
+    ctx.strokeStyle = "#222734";
+    ctx.beginPath();
+    ctx.moveTo(50, 125);
+    ctx.lineTo(670, 125);
+    ctx.stroke();
+
+    // Tiêu đề biên lai
+    ctx.fillStyle = "#00FF66";
+    ctx.font = "bold 20px -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("RÚT TIỀN THÀNH CÔNG", 360, 175);
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "14px -apple-system, sans-serif";
+    ctx.fillText("Lệnh thanh toán đã được xác nhận trên hệ thống", 360, 202);
+
+    // Khối số tiền thực nhận
+    ctx.fillStyle = "#151922";
+    ctx.fillRect(80, 230, 560, 85);
+    ctx.strokeStyle = "#2b3242";
+    ctx.strokeRect(80, 230, 560, 85);
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "12px -apple-system, sans-serif";
+    ctx.fillText("SỐ TIỀN THỰC NHẬN", 360, 258);
+
+    ctx.fillStyle = "#00FF66";
+    ctx.font = "bold 32px -apple-system, sans-serif";
+    ctx.fillText(formatVND(receipt.netAmount), 360, 296);
+
+    // Bảng chi tiết
+    ctx.textAlign = "left";
+    const rows = [
+      { label: "Mã giao dịch:", val: receipt.id },
+      { label: "Thời gian:", val: receipt.timestamp },
+      { label: "Số tiền yêu cầu:", val: formatVND(receipt.amount) },
+      { label: "Phí xử lý:", val: formatVND(receipt.fee) },
+      { label: "Phương thức:", val: receipt.methodName },
+      { label: "Ngân hàng nhận:", val: receipt.bankName },
+      { label: "Người nhận:", val: receipt.recipientName },
+      { label: "Số tài khoản / SĐT:", val: receipt.accountNumber },
+      { label: "Địa chỉ IP:", val: `${clientIp} (Đã bảo mật 1 IP)` },
+      { label: "Trạng thái:", val: "SUCCESS (THÀNH CÔNG)" },
+    ];
+
+    let currentY = 355;
+    rows.forEach((r, idx) => {
+      if (idx % 2 === 0) {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.02)";
+        ctx.fillRect(60, currentY - 18, 600, 32);
+      }
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "13px -apple-system, sans-serif";
+      ctx.fillText(r.label, 80, currentY + 3);
+
+      ctx.fillStyle = r.label.includes("Trạng thái") ? "#00FF66" : "#f1f5f9";
+      ctx.font = "bold 13px -apple-system, sans-serif";
+      ctx.fillText(r.val, 310, currentY + 3);
+
+      currentY += 35;
+    });
+
+    // Simulated QR Code thanh lịch
+    const qrX = 80;
+    const qrY = 720;
+    ctx.fillStyle = "#151922";
+    ctx.fillRect(qrX, qrY, 110, 110);
+    ctx.strokeStyle = "#2b3242";
+    ctx.strokeRect(qrX, qrY, 110, 110);
+
+    ctx.fillStyle = "#00FF66";
+    for (let i = 0; i < 7; i++) {
+      for (let j = 0; j < 7; j++) {
+        if ((i + j) % 2 === 0 || (i < 2 && j < 2) || (i > 4 && j > 4)) {
+          ctx.fillRect(qrX + 12 + i * 12, qrY + 12 + j * 12, 8, 8);
+        }
+      }
+    }
+
+    ctx.fillStyle = "#f8fafc";
+    ctx.font = "bold 14px -apple-system, sans-serif";
+    ctx.fillText("Mã bảo mật VFast Cyber", 215, 755);
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "13px -apple-system, sans-serif";
+    ctx.fillText("Biên lai đã được ký số và lưu trữ trên hệ thống.", 215, 782);
+    ctx.fillText("Chứng từ xác thực giao dịch chính thức từ hệ thống VFast.", 215, 805);
+
+    // Footer
+    ctx.strokeStyle = "#222734";
+    ctx.beginPath();
+    ctx.moveTo(50, 875);
+    ctx.lineTo(670, 875);
+    ctx.stroke();
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#64748b";
+    ctx.font = "12px -apple-system, sans-serif";
+    ctx.fillText("HỆ THỐNG GIAO DỊCH TỰ ĐỘNG VFAST CYBER — CHỨNG TỪ XÁC NHẬN GIAO DỊCH", 360, 905);
+    ctx.fillText("Bản quyền © 2026 VFast Cyber. Mọi hành vi vi phạm IP đều bị xử lý theo quy định.", 360, 925);
+
+    // Download
+    const dataUrl = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.download = `VFast_Bill_${receipt.id}.png`;
+    link.href = dataUrl;
+    link.click();
+    showToast("Đã lưu ảnh bill", `Tệp VFast_Bill_${receipt.id}.png đã được tải xuống.`, "success");
+  };
+
+  // Tải xuống toàn bộ code gộp vào 1 file duy nhất dành cho người dùng điện thoại
+  const handleDownloadAllCode = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+    try {
+      showToast("Đang chuẩn bị tải...", "Đang khởi tạo file tổng hợp toàn bộ mã nguồn...", "info");
+      const res = await fetch("/vfast-cyber-all-code.txt");
+      let text = "";
+      if (res.ok) {
+        text = await res.text();
+        setAllCodeText(text);
+      }
+      
+      const blob = new Blob([text || "VFast Cyber Full Code"], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "vfast-cyber-all-code.txt";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showToast("Tải xuống thành công!", "Tệp vfast-cyber-all-code.txt đã được lưu vào điện thoại.", "success");
+    } catch (err) {
+      window.open("/vfast-cyber-all-code.txt", "_blank");
+      showToast("Mở file", "Đang mở file trực tiếp trên trình duyệt.", "info");
+    }
+  };
+
+  const handleOpenCodePreview = async () => {
+    try {
+      if (!allCodeText) {
+        showToast("Đang tải dữ liệu...", "Đang đọc toàn bộ file mã nguồn...", "info");
+        const res = await fetch("/vfast-cyber-all-code.txt");
+        if (res.ok) {
+          const t = await res.text();
+          setAllCodeText(t);
+        }
+      }
+      setShowAllCodeModal(true);
+    } catch (e) {
+      setShowAllCodeModal(true);
+    }
+  };
+
+  // Lọc nhiệm vụ
+  const displayedTasks = useMemo(() => {
+    return tasks.filter((t) => {
+      if (t.platform !== taskPlatform) return false;
+      if (taskTypeFilter !== "all" && t.taskTypeId !== taskTypeFilter) return false;
+      return true;
+    });
+  }, [tasks, taskPlatform, taskTypeFilter]);
+
+  // Thống kê
+  const completedCount = useMemo(() => tasks.filter((t) => t.status === "completed").length, [tasks]);
+  const totalEarned = useMemo(
+    () => tasks.filter((t) => t.status === "completed").reduce((sum, t) => sum + t.reward, 0),
+    [tasks]
+  );
+  const totalWithdrawn = useMemo(
+    () => withdrawals.filter((w) => w.status === "success").reduce((sum, w) => sum + w.amount, 0),
+    [withdrawals]
+  );
+
+  return (
+    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc] flex flex-col font-sans relative selection:bg-[#00FF66] selection:text-black">
+      {/* Background Subtle Texture */}
+      <div className="fixed inset-0 subtle-grid pointer-events-none opacity-40 z-0" />
+
+      {/* ======================================================================
+          MÀN HÌNH TỰ ĐỘNG KHÓA (CYBER LOCKDOWN SCREEN KHI ĐẾN GIỜ QUY ĐỊNH)
+      ====================================================================== */}
+      {isCurrentlyLocked && (
+        <div className="fixed inset-0 z-50 bg-[#090a0f] flex flex-col items-center justify-center p-4">
+          <div className="max-w-md w-full bg-[#11141c] border border-[#2b3242] rounded-2xl p-6 sm:p-8 text-center space-y-6 shadow-2xl relative">
+            <div className="w-16 h-16 rounded-full bg-[#181c26] border border-amber-500/30 text-amber-400 mx-auto flex items-center justify-center">
+              <Icons.Lock />
+            </div>
+
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                <span>HỆ THỐNG ĐANG TẠM KHÓA</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-cyber font-bold text-white">
+                Hệ Thống Đóng Cửa Định Kỳ
+              </h2>
+              <p className="text-xs text-[#94a3b8] leading-relaxed">
+                Theo quy định vận hành VFast Cyber, máy chủ sẽ tự động tạm ngưng giao dịch để bảo trì và đồng bộ dữ liệu.
+              </p>
+            </div>
+
+            {/* Đồng hồ thời gian thực */}
+            <div className="p-4 rounded-xl bg-[#181c26] border border-[#222734] space-y-1">
+              <div className="text-xs text-[#64748b]">Thời gian hiện tại (Giờ chuẩn VN)</div>
+              <div className="text-2xl font-cyber font-bold text-[#00FF66] tracking-wider">
+                {lockInfo.vnTimeString}
+              </div>
+              <div className="text-xs text-[#94a3b8]">
+                {lockInfo.currentDayName}, {lockInfo.vnDateString}
+              </div>
+            </div>
+
+            {/* Bảng quy định giờ khóa */}
+            <div className="text-xs text-left bg-[#0e1117] border border-[#222734] rounded-xl p-4 space-y-2.5">
+              <div className="font-semibold text-white flex items-center gap-1.5 border-b border-[#222734] pb-2">
+                <Icons.Clock />
+                <span>Lịch biểu hoạt động hệ thống</span>
+              </div>
+              <div className="flex justify-between items-center text-[#94a3b8]">
+                <span>Thứ 2, 3, 5, 6, 7:</span>
+                <span className="font-semibold text-amber-400">Khóa lúc 21:30</span>
+              </div>
+              <div className="flex justify-between items-center text-[#94a3b8]">
+                <span>Thứ 4 & Chủ Nhật:</span>
+                <span className="font-semibold text-amber-400">Khóa lúc 22:00</span>
+              </div>
+              <div className="flex justify-between items-center text-[#94a3b8] pt-1.5 border-t border-[#222734]">
+                <span>Mở cửa trở lại:</span>
+                <span className="font-semibold text-[#00FF66]">06:00 sáng hôm sau</span>
+              </div>
+            </div>
+
+            {/* Nút bỏ qua khóa dành cho Admin / Kiểm thử */}
+            <div className="pt-2">
+              <button
+                onClick={() => {
+                  setBypassLock(true);
+                  setSimulateLockMode(false);
+                  showToast("Mở khóa kiểm thử", "Đã tạm bỏ qua giới hạn giờ để kiểm thử giao diện.", "info");
+                }}
+                className="w-full py-2.5 rounded-lg bg-[#181c26] text-[#94a3b8] hover:text-white border border-[#2b3242] hover:border-[#00FF66]/50 text-xs font-medium transition-colors cursor-pointer"
+              >
+                Mở khóa kiểm thử (Dành cho Quản trị viên)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================================
+          HEADER TỐI GIẢN, GỌN GÀNG (CLEAN HEADER)
+      ====================================================================== */}
+      <header className="sticky top-0 z-40 bg-[#090a0f]/90 backdrop-blur-md border-b border-[#222734]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          {/* Logo */}
+          <div
+            className="flex items-center gap-2.5 cursor-pointer select-none"
+            onClick={() => setCurrentTab("home")}
+          >
+            <Icons.Logo />
+            <div className="font-cyber font-bold text-lg tracking-tight">
+              <span className="text-white">VFast</span>
+              <span className="text-[#00FF66] ml-1">Cyber</span>
+            </div>
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-1">
+            {[
+              { id: "home", label: "Trang chủ", icon: Icons.Home },
+              { id: "tasks", label: "Nhiệm vụ", icon: Icons.Task },
+              { id: "products", label: "Mua sản phẩm", icon: Icons.ShoppingBag, badge: "Mới" },
+              { id: "withdraw", label: "Rút tiền", icon: Icons.Withdraw },
+              { id: "history", label: "Lịch sử", icon: Icons.History },
+              { id: "account", label: "Tài khoản", icon: Icons.User },
+            ].map((nav) => {
+              const Icon = nav.icon;
+              const isActive = currentTab === nav.id;
+              return (
+                <button
+                  key={nav.id}
+                  onClick={() => setCurrentTab(nav.id as any)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer relative ${
+                    isActive
+                      ? "bg-[#181c26] text-[#00FF66] border border-[#2b3242]"
+                      : "text-[#94a3b8] hover:text-white hover:bg-[#11141c]"
+                  }`}
+                >
+                  <Icon />
+                  <span>{nav.label}</span>
+                  {nav.badge && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-[#00FF66]/20 text-[#00FF66] border border-[#00FF66]/40 leading-none">
+                      {nav.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Balance & IP & Controls Corner */}
+          <div className="flex items-center gap-2.5">
+            {/* IP Badge trên Header */}
+            <div
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-[#11141c] border border-[#222734] rounded-md text-xs text-[#94a3b8]"
+              title="Địa chỉ IP kết nối của bạn"
+            >
+              <Icons.Globe />
+              <span className="font-mono text-white text-[11px]">{clientIp}</span>
+            </div>
+
+            {/* Trạng thái giờ hoạt động / Nút thử khóa */}
+            <button
+              onClick={() => {
+                if (bypassLock) {
+                  setBypassLock(false);
+                } else {
+                  setSimulateLockMode(!simulateLockMode);
+                }
+              }}
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-[#11141c] border border-[#222734] hover:border-amber-400/40 rounded-md text-[11px] text-[#94a3b8] transition-colors cursor-pointer"
+              title="Nhấn để thử nghiệm tính năng tự động khóa 21h30/22h00"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66]" />
+              <span>Khóa lúc: {lockInfo.lockTimeString}</span>
+            </button>
+
+            {/* Số dư */}
+            <div
+              onClick={() => setCurrentTab("withdraw")}
+              className="flex items-center gap-2 px-3 py-1 bg-[#11141c] border border-[#222734] hover:border-[#00FF66]/50 rounded-md cursor-pointer transition-colors"
+              title="Nhấn để xem trang rút tiền"
+            >
+              <span className="text-xs text-[#94a3b8] hidden sm:inline">Số dư:</span>
+              <span className="text-sm font-cyber font-bold text-[#00FF66] tracking-wide">
+                {formatVND(balance)}
+              </span>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-md text-[#94a3b8] hover:text-white hover:bg-[#11141c]"
+              aria-label="Menu"
+            >
+              {mobileMenuOpen ? <Icons.Close /> : <Icons.Menu />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Nav Drawer */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-[#0e1117] border-b border-[#222734] px-4 py-2 space-y-1">
+            <div className="py-2 px-3 mb-1 bg-[#181c26] rounded flex items-center justify-between text-xs">
+              <span className="text-[#94a3b8]">IP kết nối:</span>
+              <span className="font-mono text-[#00FF66] font-semibold">{clientIp}</span>
+            </div>
+            {[
+              { id: "home", label: "Trang chủ", icon: Icons.Home },
+              { id: "tasks", label: "Nhiệm vụ", icon: Icons.Task },
+              { id: "products", label: "Mua sản phẩm (Mới)", icon: Icons.ShoppingBag },
+              { id: "withdraw", label: "Rút tiền", icon: Icons.Withdraw },
+              { id: "history", label: "Lịch sử", icon: Icons.History },
+              { id: "account", label: "Tài khoản", icon: Icons.User },
+            ].map((nav) => {
+              const Icon = nav.icon;
+              const isActive = currentTab === nav.id;
+              return (
+                <button
+                  key={nav.id}
+                  onClick={() => {
+                    setCurrentTab(nav.id as any);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-[#181c26] text-[#00FF66]"
+                      : "text-[#94a3b8] hover:text-white hover:bg-[#11141c]"
+                  }`}
+                >
+                  <Icon />
+                  <span>{nav.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </header>
+
+      {/* ======================================================================
+          MAIN CONTENT AREA
+      ====================================================================== */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 z-10">
+        {/* ====================================================================
+            TAB 1: TRANG CHỦ (DASHBOARD)
+        ==================================================================== */}
+        {currentTab === "home" && (
+          <div className="space-y-6">
+            {/* THẺ HIỂN THỊ IP NGAY Ở TRANG CHỦ THEO YÊU CẦU */}
+            <div className="rounded-xl bg-[#11141c] border border-[#222734] p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#181c26] border border-[#2b3242] flex items-center justify-center text-[#00FF66] shrink-0">
+                  <Icons.Globe />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-[#94a3b8]">Địa chỉ IP hiện tại:</span>
+                    <span className="font-mono font-bold text-base text-white tracking-wide">
+                      {clientIp}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#64748b] mt-0.5">
+                    Hệ thống áp dụng chính sách 1 IP / 1 Tài khoản. Nghiêm cấm sử dụng VPN/Proxy.
+                  </p>
+                </div>
+              </div>
+
+              {/* Trạng thái giờ hoạt động hôm nay */}
+              <div className="flex items-center gap-3 sm:self-center">
+                <div className="text-right sm:block hidden">
+                  <div className="text-xs text-[#94a3b8]">Lịch đóng cửa hôm nay ({lockInfo.currentDayName}):</div>
+                  <div className="text-xs font-semibold text-amber-400">
+                    Tự động khóa lúc {lockInfo.lockTimeString}
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setSimulateLockMode(true);
+                    setBypassLock(false);
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-[#181c26] border border-[#2b3242] hover:border-amber-400/40 text-[11px] text-[#94a3b8] hover:text-white transition-colors cursor-pointer"
+                  title="Kiểm tra giao diện khóa 21h30/22h00"
+                >
+                  Thử xem màn hình khóa
+                </button>
+              </div>
+            </div>
+
+            {/* Hero / Welcome */}
+            <div className="rounded-xl bg-[#11141c] border border-[#222734] p-6 sm:p-8">
+              <div className="max-w-2xl">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#181c26] border border-[#2b3242] text-[#94a3b8] text-xs font-medium mb-4">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66]" />
+                  <span>Hệ thống nhiệm vụ trực tuyến</span>
+                </div>
+                <h1 className="text-2xl sm:text-4xl font-cyber font-bold tracking-tight text-white mb-2">
+                  VFast <span className="text-[#00FF66]">Cyber</span>
+                </h1>
+                <p className="text-sm sm:text-base text-[#94a3b8] leading-relaxed mb-6 font-normal">
+                  {SYSTEM_CONFIG.subtitle}
+                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={() => setCurrentTab("tasks")}
+                    className="px-5 py-2.5 rounded-lg bg-[#00FF66] text-black font-semibold text-xs tracking-wide hover:bg-[#00e65c] transition-colors cursor-pointer"
+                  >
+                    Xem danh sách nhiệm vụ
+                  </button>
+                  <button
+                    onClick={() => setCurrentTab("withdraw")}
+                    className="px-5 py-2.5 rounded-lg bg-[#181c26] text-[#f8fafc] border border-[#2b3242] font-semibold text-xs tracking-wide hover:bg-[#222734] transition-colors cursor-pointer"
+                  >
+                    Rút tiền về tài khoản
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 4 Statistics Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Thẻ 1: Số dư */}
+              <div className="rounded-xl bg-[#11141c] border border-[#222734] p-5">
+                <span className="text-xs uppercase tracking-wider text-[#94a3b8] font-medium block mb-2">
+                  Số dư hiện tại
+                </span>
+                <div className="text-2xl font-cyber font-bold text-[#00FF66] mb-1">
+                  {formatVND(balance)}
+                </div>
+                <p className="text-xs text-[#64748b]">
+                  {balance === 0 ? "Bắt đầu làm nhiệm vụ để nhận thưởng" : "Khả dụng rút ngay"}
+                </p>
+              </div>
+
+              {/* Thẻ 2: Nhiệm vụ hoàn thành */}
+              <div className="rounded-xl bg-[#11141c] border border-[#222734] p-5">
+                <span className="text-xs uppercase tracking-wider text-[#94a3b8] font-medium block mb-2">
+                  Nhiệm vụ đã hoàn thành
+                </span>
+                <div className="text-2xl font-cyber font-bold text-white mb-1">
+                  {completedCount}{" "}
+                  <span className="text-xs font-normal text-[#64748b]">/ {tasks.length}</span>
+                </div>
+                <p className="text-xs text-[#64748b]">
+                  Tỷ lệ đạt {Math.round((completedCount / tasks.length) * 100)}%
+                </p>
+              </div>
+
+              {/* Thẻ 3: Tổng phần thưởng */}
+              <div className="rounded-xl bg-[#11141c] border border-[#222734] p-5">
+                <span className="text-xs uppercase tracking-wider text-[#94a3b8] font-medium block mb-2">
+                  Tổng phần thưởng
+                </span>
+                <div className="text-2xl font-cyber font-bold text-white mb-1">
+                  {formatVND(totalEarned)}
+                </div>
+                <p className="text-xs text-[#64748b]">Đã tích luỹ từ nhiệm vụ</p>
+              </div>
+
+              {/* Thẻ 4: Trạng thái tài khoản */}
+              <div className="rounded-xl bg-[#11141c] border border-[#222734] p-5">
+                <span className="text-xs uppercase tracking-wider text-[#94a3b8] font-medium block mb-2">
+                  Trạng thái tài khoản
+                </span>
+                <div className="text-sm font-cyber font-bold text-[#00FF66] flex items-center gap-2 mb-1">
+                  <span className="w-2 h-2 rounded-full bg-[#00FF66]" />
+                  Bình thường ({clientIp})
+                </div>
+                <p className="text-xs text-[#64748b]">1 IP duy nhất • Không vi phạm</p>
+              </div>
+            </div>
+
+            {/* Quick Task Highlight */}
+            <div className="rounded-xl bg-[#11141c] border border-[#222734] p-6">
+              {/* Card nổi bật: Mục Mua Sản Phẩm TikTok Shop Mới */}
+              <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-[#181c26] to-emerald-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-amber-300 font-cyber font-bold text-sm">
+                    <Icons.ShoppingBag />
+                    <span>MỤC MỚI: MUA SẢN PHẨM TIKTOK SHOP</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 font-bold border border-amber-400/40">
+                      THƯỞNG TỚI 1.421.000₫
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#94a3b8]">
+                    6 sản phẩm TikTok Shop chọn lọc. Mỗi link dùng đúng 1 lần duy nhất, tiền thưởng cộng khi có đơn mua thật ngoài đời!
+                  </p>
+                </div>
+                <button
+                  onClick={() => setCurrentTab("products")}
+                  className="px-4 py-2 rounded-lg bg-[#00FF66] text-black font-semibold text-xs hover:bg-[#00e65c] transition-colors shrink-0 cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <Icons.Cart />
+                  <span>Khám phá ngay</span>
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-cyber font-bold text-base text-white">Nhiệm vụ nổi bật</h3>
+                  <p className="text-xs text-[#94a3b8]">Bắt đầu thực hiện để nhận thưởng ngay lập tức</p>
+                </div>
+                <button
+                  onClick={() => setCurrentTab("tasks")}
+                  className="text-xs font-medium text-[#00FF66] hover:underline cursor-pointer"
+                >
+                  Xem tất cả ({tasks.length})
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {tasks.slice(0, 4).map((task) => (
+                  <div
+                    key={task.id}
+                    className="p-4 rounded-lg bg-[#181c26] border border-[#222734] flex items-center justify-between gap-3"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="p-2 rounded bg-[#11141c] text-[#94a3b8]">
+                        {task.platform === "tiktok" ? <Icons.TikTok /> : <Icons.YouTube />}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-semibold text-white truncate">{task.taskTypeName}</span>
+                          <span className="text-xs font-cyber font-bold text-[#00FF66]">
+                            +{formatVND(task.reward)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#64748b] truncate max-w-[200px] sm:max-w-xs">{task.link}</p>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => handleExecuteTask(task)}
+                      disabled={task.status === "completed"}
+                      className={`px-3 py-1.5 rounded text-xs font-medium transition-colors shrink-0 cursor-pointer ${
+                        task.status === "completed"
+                          ? "bg-[#11141c] text-[#64748b] cursor-not-allowed"
+                          : "bg-[#00FF66] text-black font-semibold hover:bg-[#00e65c]"
+                      }`}
+                    >
+                      {task.status === "completed" ? "Đã xong" : "Thực hiện"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ====================================================================
+            TAB 2: HỆ THỐNG NHIỆM VỤ (TASKS)
+        ==================================================================== */}
+        {currentTab === "tasks" && (
+          <div className="space-y-6">
+            {/* Banner gợi ý mục Mua sản phẩm */}
+            <div className="p-3.5 rounded-xl bg-gradient-to-r from-amber-500/10 via-[#181c26] to-[#11141c] border border-amber-500/30 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-amber-400 font-cyber font-bold">✨ MỤC MỚI:</span>
+                <span className="text-white">Mua sản phẩm TikTok Shop nhận thưởng khủng tới</span>
+                <span className="text-[#00FF66] font-cyber font-bold">1.421.000₫/đơn</span>
+              </div>
+              <button
+                onClick={() => setCurrentTab("products")}
+                className="px-3 py-1.5 rounded-lg bg-[#00FF66] text-black font-semibold text-xs hover:bg-[#00e65c] transition-colors shrink-0 cursor-pointer"
+              >
+                Xem sản phẩm →
+              </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222734] pb-4">
+              <div>
+                <h2 className="text-xl font-cyber font-bold text-white">Danh sách nhiệm vụ</h2>
+                <p className="text-xs text-[#94a3b8] mt-0.5">
+                  Chọn nền tảng và bấm thực hiện để nhận thưởng tương ứng.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-1.5 bg-[#11141c] p-1 rounded-lg border border-[#222734]">
+                <button
+                  onClick={() => setTaskPlatform("tiktok")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded text-xs font-semibold transition-colors cursor-pointer ${
+                    taskPlatform === "tiktok"
+                      ? "bg-[#181c26] text-[#00FF66] border border-[#2b3242]"
+                      : "text-[#94a3b8] hover:text-white"
+                  }`}
+                >
+                  <Icons.TikTok />
+                  <span>TikTok ({tasks.filter((t) => t.platform === "tiktok").length})</span>
+                </button>
+
+                <button
+                  onClick={() => setTaskPlatform("youtube")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded text-xs font-semibold transition-colors cursor-pointer ${
+                    taskPlatform === "youtube"
+                      ? "bg-[#181c26] text-[#00FF66] border border-[#2b3242]"
+                      : "text-[#94a3b8] hover:text-white"
+                  }`}
+                >
+                  <Icons.YouTube />
+                  <span>YouTube ({tasks.filter((t) => t.platform === "youtube").length})</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Task Type Filters */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs text-[#64748b] mr-1.5">Loại:</span>
+              <button
+                onClick={() => setTaskTypeFilter("all")}
+                className={`px-3 py-1 rounded text-xs font-medium cursor-pointer transition-colors ${
+                  taskTypeFilter === "all"
+                    ? "bg-[#00FF66] text-black font-semibold"
+                    : "bg-[#11141c] text-[#94a3b8] hover:text-white border border-[#222734]"
+                }`}
+              >
+                Tất cả
+              </button>
+              {SYSTEM_CONFIG.taskTypes.map((type) => (
+                <button
+                  key={type.id}
+                  onClick={() => setTaskTypeFilter(type.id)}
+                  className={`px-3 py-1 rounded text-xs font-medium cursor-pointer transition-colors ${
+                    taskTypeFilter === type.id
+                      ? "bg-[#00FF66] text-black font-semibold"
+                      : "bg-[#11141c] text-[#94a3b8] hover:text-white border border-[#222734]"
+                  }`}
+                >
+                  {type.name} ({formatVND(type.reward)})
+                </button>
+              ))}
+            </div>
+
+            {/* Empty state when no tasks match (e.g. YouTube is 0) */}
+            {displayedTasks.length === 0 && (
+              <div className="p-8 text-center rounded-xl bg-[#11141c] border border-[#222734] space-y-3">
+                <div className="w-12 h-12 mx-auto rounded-full bg-[#181c26] text-[#64748b] flex items-center justify-center">
+                  {taskPlatform === "youtube" ? <Icons.YouTube /> : <Icons.TikTok />}
+                </div>
+                <div className="font-semibold text-white text-sm">
+                  {taskPlatform === "youtube" ? "Hiện có 0 nhiệm vụ YouTube" : "Không tìm thấy nhiệm vụ phù hợp"}
+                </div>
+                <p className="text-xs text-[#94a3b8] max-w-md mx-auto leading-relaxed">
+                  {taskPlatform === "youtube"
+                    ? "Toàn bộ liên kết YouTube đã được làm mới xoá về 0 theo yêu cầu. Hiện tại hệ thống tập trung hoàn toàn vào 100 nhiệm vụ TikTok đang hoạt động!"
+                    : "Không có nhiệm vụ nào thuộc danh mục đã chọn."}
+                </p>
+                {taskPlatform === "youtube" && (
+                  <button
+                    onClick={() => setTaskPlatform("tiktok")}
+                    className="mt-2 px-4 py-2 rounded-lg bg-[#00FF66] text-black font-semibold text-xs hover:bg-[#00e65c] transition-colors cursor-pointer inline-flex items-center gap-2"
+                  >
+                    <Icons.TikTok />
+                    <span>Xem 100 nhiệm vụ TikTok</span>
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Task Cards List */}
+            <div className="space-y-2.5">
+              {displayedTasks.map((task) => {
+                const isExecuting = processingTaskId === task.id;
+                const isCounting = activeCountdown?.taskId === task.id;
+
+                return (
+                  <div
+                    key={task.id}
+                    className={`p-4 rounded-xl border transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                      task.status === "completed"
+                        ? "bg-[#0e1117] border-[#1e222d] opacity-75"
+                        : "bg-[#11141c] border-[#222734] hover:border-[#2b3242]"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className="p-2.5 rounded bg-[#181c26] text-[#94a3b8] shrink-0 mt-0.5 sm:mt-0">
+                        {task.platform === "tiktok" ? <Icons.TikTok /> : <Icons.YouTube />}
+                      </div>
+
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <span className="text-sm font-semibold text-white">{task.taskTypeName}</span>
+                          <span className="text-xs font-cyber font-bold text-[#00FF66]">
+                            +{formatVND(task.reward)}
+                          </span>
+                          {task.isDuplicate && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#181c26] text-[#64748b] border border-[#222734]">
+                              Đã có link tương tự
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={task.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-[#64748b] hover:text-[#94a3b8] truncate max-w-[240px] sm:max-w-md block"
+                          >
+                            {task.link}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-center">
+                      {task.taskTypeId === "copy_link" && task.status !== "completed" && (
+                        <button
+                          onClick={(e) => handleCopyLink(task, e)}
+                          className="px-3 py-1.5 rounded bg-[#181c26] text-[#94a3b8] hover:text-white border border-[#2b3242] text-xs font-medium flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <Icons.Copy />
+                          <span>Sao chép</span>
+                        </button>
+                      )}
+
+                      {task.status === "completed" ? (
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#181c26] text-[#94a3b8] text-xs font-medium">
+                          <Icons.CheckCircle />
+                          <span>Đã nhận thưởng</span>
+                        </div>
+                      ) : isCounting ? (
+                        <div className="flex items-center gap-1.5 px-4 py-1.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-medium">
+                          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                          <span>Đang kiểm tra ({activeCountdown.secondsLeft}s)</span>
+                        </div>
+                      ) : isExecuting ? (
+                        <div className="flex items-center gap-1.5 px-4 py-1.5 rounded bg-[#181c26] text-[#94a3b8] text-xs">
+                          <Icons.Spinner />
+                          <span>Đang xử lý...</span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleExecuteTask(task)}
+                          className="px-4 py-1.5 rounded bg-[#00FF66] text-black font-semibold text-xs hover:bg-[#00e65c] transition-colors cursor-pointer"
+                        >
+                          Thực hiện
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ====================================================================
+            TAB MỚI: MUA SẢN PHẨM TIKTOK SHOP (PRODUCTS)
+            - Mỗi link dùng đúng 1 lần
+            - Khi ấn vào rồi quay lại: KHÔNG TÍNH NGAY
+            - Chừng nào mua thật: Admin sẽ đối soát và cộng tiền ở ngoài
+        ==================================================================== */}
+        {currentTab === "products" && (
+          <div className="space-y-6">
+            {/* Header mục Mua sản phẩm */}
+            <div className="border-b border-[#222734] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#00FF66]/10 border border-[#00FF66]/30 text-[#00FF66] text-xs font-semibold mb-2">
+                  <Icons.Cart />
+                  <span>Mục mới: TikTok Shop Affiliate & Đối soát đơn hàng</span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-cyber font-bold text-white tracking-tight">
+                  Mua sản phẩm TikTok Shop nhận thưởng
+                </h2>
+                <p className="text-xs sm:text-sm text-[#94a3b8] mt-1">
+                  Đặt mua sản phẩm thực tế từ liên kết bên dưới để nhận thưởng lớn lên đến 1.421.000₫.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <div className="px-3 py-2 rounded-lg bg-[#11141c] border border-[#222734] text-xs text-right">
+                  <div className="text-[#94a3b8]">Tổng tiền thưởng tối đa</div>
+                  <div className="text-sm font-cyber font-bold text-[#00FF66]">2.561.000₫</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Banner quy tắc đối soát & cộng tiền cực kỳ quan trọng */}
+            <div className="rounded-xl bg-gradient-to-r from-amber-500/10 via-[#181c26] to-emerald-500/10 border border-amber-500/40 p-5 space-y-3">
+              <div className="flex items-center gap-2 text-amber-400 font-cyber font-bold text-sm sm:text-base">
+                <Icons.AlertCircle />
+                <span>QUY TẮC ĐỐI SOÁT & CỘNG TIỀN QUAN TRỌNG:</span>
+              </div>
+              <ul className="text-xs text-[#cbd5e1] space-y-2 leading-relaxed">
+                <li className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
+                  <span>
+                    <strong className="text-white font-semibold">Mỗi liên kết chỉ dùng đúng 1 lần:</strong> Mỗi liên kết sản phẩm bên dưới chỉ được ấn vào và ghi nhận yêu cầu đúng 1 lần duy nhất trên hệ thống.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
+                  <span>
+                    <strong className="text-white font-semibold">Không cộng tiền tự động khi quay lại:</strong> Khi bạn bấm vào link rồi quay lại trang, hệ thống <span className="text-amber-300 font-bold underline">TUYỆT ĐỐI KHÔNG TỰ ĐỘNG TÍNH TIỀN NGAY</span> để chống gian lận click ảo.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66] mt-1.5 shrink-0" />
+                  <span>
+                    <strong className="text-[#00FF66] font-semibold">Cộng tiền ngoài đời thực:</strong> Bạn cần tiến hành mua hàng thật trên TikTok Shop. Chừng nào có đơn mua thật, Admin sẽ kiểm tra đối soát mã đơn ngoài đời và cộng đủ 100% tiền thưởng vào số dư tài khoản của bạn!
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Thống kê tiến độ 6 sản phẩm */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-4 rounded-xl bg-[#11141c] border border-[#222734]">
+                <div className="text-xs text-[#94a3b8] mb-1">Tổng sản phẩm</div>
+                <div className="text-xl font-cyber font-bold text-white">{PRODUCT_PURCHASE_TASKS.length}</div>
+                <div className="text-[11px] text-[#64748b]">Liên kết TikTok Shop</div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[#11141c] border border-[#222734]">
+                <div className="text-xs text-[#94a3b8] mb-1">Chưa sử dụng</div>
+                <div className="text-xl font-cyber font-bold text-[#00FF66]">
+                  {productPurchases.filter((p) => p.status === "available").length}
+                </div>
+                <div className="text-[11px] text-[#64748b]">Sẵn sàng đặt mua</div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[#11141c] border border-[#222734]">
+                <div className="text-xs text-[#94a3b8] mb-1">Chờ đối soát đơn</div>
+                <div className="text-xl font-cyber font-bold text-amber-400">
+                  {productPurchases.filter((p) => p.status === "pending_verification").length}
+                </div>
+                <div className="text-[11px] text-[#64748b]">Đang chờ duyệt đơn thật</div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[#11141c] border border-[#222734]">
+                <div className="text-xs text-[#94a3b8] mb-1">Đã cộng tiền</div>
+                <div className="text-xl font-cyber font-bold text-emerald-400">
+                  {productPurchases.filter((p) => p.status === "completed").length}
+                </div>
+                <div className="text-[11px] text-[#64748b]">Đã đối soát xong</div>
+              </div>
+            </div>
+
+            {/* Bộ lọc danh mục sản phẩm */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs text-[#64748b]">Phân loại:</span>
+                <button
+                  onClick={() => setProductCategoryFilter("all")}
+                  className={`px-3 py-1.5 rounded text-xs font-medium cursor-pointer transition-colors ${
+                    productCategoryFilter === "all"
+                      ? "bg-[#00FF66] text-black font-semibold"
+                      : "bg-[#11141c] text-[#94a3b8] hover:text-white border border-[#222734]"
+                  }`}
+                >
+                  Tất cả ({PRODUCT_PURCHASE_TASKS.length})
+                </button>
+                <button
+                  onClick={() => setProductCategoryFilter("vip")}
+                  className={`px-3 py-1.5 rounded text-xs font-medium cursor-pointer transition-colors flex items-center gap-1.5 ${
+                    productCategoryFilter === "vip"
+                      ? "bg-amber-400 text-black font-semibold"
+                      : "bg-[#11141c] text-amber-400 hover:text-white border border-amber-500/30"
+                  }`}
+                >
+                  <span>Sản phẩm VIP ({PRODUCT_PURCHASE_TASKS.filter((p) => p.reward >= 1000000).length})</span>
+                </button>
+                <button
+                  onClick={() => setProductCategoryFilter("standard")}
+                  className={`px-3 py-1.5 rounded text-xs font-medium cursor-pointer transition-colors ${
+                    productCategoryFilter === "standard"
+                      ? "bg-[#00FF66] text-black font-semibold"
+                      : "bg-[#11141c] text-[#94a3b8] hover:text-white border border-[#222734]"
+                  }`}
+                >
+                  Phổ thông ({PRODUCT_PURCHASE_TASKS.filter((p) => p.reward < 1000000).length})
+                </button>
+              </div>
+
+              <div className="text-xs text-[#64748b]">
+                * Lưu ý: Mỗi liên kết chỉ dùng đúng 1 lần
+              </div>
+            </div>
+
+            {/* Danh sách 6 sản phẩm TikTok Shop */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {PRODUCT_PURCHASE_TASKS.filter((prod) => {
+                if (productCategoryFilter === "vip") return prod.reward >= 1000000;
+                if (productCategoryFilter === "standard") return prod.reward < 1000000;
+                return true;
+              }).map((product) => {
+                const userState = productPurchases.find((p) => p.productId === product.id);
+                const status = userState?.status || "available";
+                const isVip = product.reward >= 1000000;
+
+                return (
+                  <div
+                    key={product.id}
+                    className={`rounded-xl border p-5 transition-all flex flex-col justify-between gap-4 ${
+                      isVip
+                        ? "bg-gradient-to-b from-[#181d28] to-[#11141c] border-amber-500/40 shadow-lg shadow-amber-500/5"
+                        : "bg-[#11141c] border-[#222734] hover:border-[#2b3242]"
+                    }`}
+                  >
+                    <div>
+                      {/* Card Header: Category & Status Badge */}
+                      <div className="flex items-center justify-between gap-2 mb-2.5">
+                        <span
+                          className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${
+                            isVip
+                              ? "bg-amber-400/10 text-amber-300 border-amber-400/30"
+                              : "bg-[#181c26] text-[#94a3b8] border-[#222734]"
+                          }`}
+                        >
+                          {product.category}
+                        </span>
+
+                        {status === "available" && (
+                          <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-[#00FF66] border border-emerald-500/30 font-medium">
+                            Chưa dùng (1 lần duy nhất)
+                          </span>
+                        )}
+                        {status === "pending_verification" && (
+                          <span className="text-[11px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-medium flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                            Đang chờ đối soát đơn thật
+                          </span>
+                        )}
+                        {status === "completed" && (
+                          <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-[#00FF66] border border-emerald-500/50 font-semibold flex items-center gap-1">
+                            <Icons.CheckCircle />
+                            Đã duyệt & cộng tiền
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Product Name & Reward */}
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <h3 className="text-base font-cyber font-bold text-white leading-snug">
+                          {product.name}
+                        </h3>
+                        <div className="text-right shrink-0">
+                          <div className="text-xs text-[#64748b]">Tiền thưởng</div>
+                          <div
+                            className={`text-base sm:text-lg font-cyber font-bold ${
+                              isVip ? "text-amber-300" : "text-[#00FF66]"
+                            }`}
+                          >
+                            +{formatVND(product.reward)}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Ghi chú */}
+                      <p className="text-xs text-[#94a3b8] mb-3 leading-relaxed">
+                        {product.note}
+                      </p>
+
+                      {/* Link preview */}
+                      <div className="p-2.5 rounded-lg bg-[#0e1117] border border-[#1e222d] flex items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Icons.TikTok />
+                          <span className="text-[#64748b] truncate">{product.link}</span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(product.link);
+                            showToast("Đã sao chép liên kết TikTok Shop", product.link, "info");
+                          }}
+                          className="text-[#94a3b8] hover:text-white shrink-0 p-1 cursor-pointer"
+                          title="Sao chép liên kết"
+                        >
+                          <Icons.Copy />
+                        </button>
+                      </div>
+
+                      {/* Thông tin thời gian & Mã đơn hàng nếu đã click */}
+                      {status !== "available" && (
+                        <div className="mt-3 p-3 rounded-lg bg-[#181c26]/70 border border-[#222734] space-y-2 text-xs">
+                          {userState?.clickedAt && (
+                            <div className="flex justify-between text-[#94a3b8]">
+                              <span>Thời gian mở link:</span>
+                              <span className="text-white font-mono">{userState.clickedAt}</span>
+                            </div>
+                          )}
+                          {userState?.verifiedAt && (
+                            <div className="flex justify-between text-[#94a3b8]">
+                              <span>Duyệt cộng tiền lúc:</span>
+                              <span className="text-[#00FF66] font-mono">{userState.verifiedAt}</span>
+                            </div>
+                          )}
+
+                          {/* Nhập mã đơn hàng TikTok (để admin đối soát) */}
+                          <div className="pt-1">
+                            <label className="block text-[11px] text-[#94a3b8] mb-1">
+                              Mã đơn hàng TikTok Shop (tuỳ chọn):
+                            </label>
+                            <input
+                              type="text"
+                              value={userState?.orderCode || ""}
+                              onChange={(e) => handleUpdateProductOrderCode(product.id, e.target.value)}
+                              placeholder="VD: 578932401823..."
+                              disabled={status === "completed"}
+                              className="w-full px-2.5 py-1.5 rounded bg-[#0e1117] border border-[#2b3242] text-xs text-white placeholder-[#64748b] focus:border-[#00FF66] focus:outline-none"
+                            />
+                            <p className="text-[10px] text-[#64748b] mt-1">
+                              Điền mã đơn sau khi mua để admin kiểm tra đối soát ngoài đời nhanh hơn.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Card Actions */}
+                    <div className="pt-2 border-t border-[#222734] flex items-center justify-between gap-3">
+                      <div className="text-[11px] text-[#64748b]">
+                        {status === "available" && "Giới hạn: Dùng đúng 1 lần"}
+                        {status === "pending_verification" && "Không cộng tự động khi quay lại"}
+                        {status === "completed" && "Đã nhận đủ 100% tiền thưởng"}
+                      </div>
+
+                      {status === "available" ? (
+                        <button
+                          onClick={() => handleOpenProductPurchase(product)}
+                          className={`px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-colors cursor-pointer flex items-center gap-1.5 ${
+                            isVip
+                              ? "bg-amber-400 text-black hover:bg-amber-300 shadow-md shadow-amber-400/20"
+                              : "bg-[#00FF66] text-black hover:bg-[#00e65c]"
+                          }`}
+                        >
+                          <Icons.External />
+                          <span>Đặt mua ngay (Mở TikTok)</span>
+                        </button>
+                      ) : status === "pending_verification" ? (
+                        <button
+                          disabled
+                          className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#181c26] text-amber-400 border border-amber-500/30 cursor-not-allowed flex items-center gap-1.5"
+                        >
+                          <Icons.Clock />
+                          <span>Đã gửi - Chờ duyệt ngoài đời</span>
+                        </button>
+                      ) : (
+                        <button
+                          disabled
+                          className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#181c26] text-[#00FF66] border border-[#00FF66]/30 cursor-not-allowed flex items-center gap-1.5"
+                        >
+                          <Icons.CheckCircle />
+                          <span>Đã cộng +{formatVND(product.reward)}</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* BẢNG ĐIỀU KHIỂN QUẢN TRỊ VIÊN: ĐỐI SOÁT & CỘNG TIỀN NGOÀI ĐỜI */}
+            <div className="rounded-xl bg-[#0e1117] border border-[#222734] p-5 space-y-4 mt-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222734] pb-3">
+                <div className="flex items-center gap-2 text-white font-cyber font-bold text-sm">
+                  <span className="w-2 h-2 rounded-full bg-[#00FF66]" />
+                  <span>CÔNG CỤ QUẢN TRỊ VIÊN: ĐỐI SOÁT & CỘNG TIỀN ĐƠN HÀNG THẬT</span>
+                </div>
+                <span className="text-xs text-[#94a3b8]">
+                  (Dành cho Admin duyệt đơn khi khách hàng đã mua thật ngoài đời)
+                </span>
+              </div>
+
+              <p className="text-xs text-[#94a3b8] leading-relaxed">
+                Đúng theo yêu cầu của bạn: Khi khách hàng mua thật ngoài đời và có đơn hàng thành công, Admin bấm vào nút 
+                <strong className="text-white"> "Duyệt cộng tiền (+...₫)" </strong> 
+                bên dưới để cộng trực tiếp tiền thưởng vào số dư tài khoản của họ.
+              </p>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-[#222734] text-[#64748b]">
+                      <th className="py-2 px-3 font-medium">Sản phẩm</th>
+                      <th className="py-2 px-3 font-medium">Tiền thưởng</th>
+                      <th className="py-2 px-3 font-medium">Trạng thái</th>
+                      <th className="py-2 px-3 font-medium">Mã đơn TikTok</th>
+                      <th className="py-2 px-3 font-medium text-right">Thao tác Admin</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#222734]">
+                    {PRODUCT_PURCHASE_TASKS.map((prod) => {
+                      const userState = productPurchases.find((p) => p.productId === prod.id);
+                      const status = userState?.status || "available";
+
+                      return (
+                        <tr key={prod.id} className="hover:bg-[#181c26]/50 transition-colors">
+                          <td className="py-3 px-3 font-medium text-white">{prod.name}</td>
+                          <td className="py-3 px-3 font-cyber font-bold text-[#00FF66]">
+                            +{formatVND(prod.reward)}
+                          </td>
+                          <td className="py-3 px-3">
+                            {status === "available" && (
+                              <span className="text-[#64748b]">Chưa mở link</span>
+                            )}
+                            {status === "pending_verification" && (
+                              <span className="text-amber-400 font-medium">Chờ duyệt đơn thật</span>
+                            )}
+                            {status === "completed" && (
+                              <span className="text-[#00FF66] font-semibold">Đã cộng tiền</span>
+                            )}
+                          </td>
+                          <td className="py-3 px-3 font-mono text-[#94a3b8]">
+                            {userState?.orderCode || "Chưa nhập"}
+                          </td>
+                          <td className="py-3 px-3 text-right space-x-2">
+                            {status === "completed" ? (
+                              <span className="text-xs text-[#00FF66] font-semibold">
+                                ✓ Đã cộng thành công
+                              </span>
+                            ) : (
+                              <button
+                                onClick={() => handleAdminApproveProduct(prod)}
+                                className="px-3 py-1.5 rounded bg-[#00FF66] text-black font-semibold text-xs hover:bg-[#00e65c] transition-colors cursor-pointer"
+                                title="Admin xác nhận đơn mua thật và cộng tiền vào tài khoản"
+                              >
+                                Duyệt cộng tiền (+{formatVND(prod.reward)})
+                              </button>
+                            )}
+
+                            {status !== "available" && (
+                              <button
+                                onClick={() => handleResetProductStatus(prod.id)}
+                                className="px-2.5 py-1.5 rounded bg-[#181c26] text-[#94a3b8] hover:text-white border border-[#2b3242] text-[11px] transition-colors cursor-pointer"
+                                title="Đặt lại trạng thái để kiểm thử lại"
+                              >
+                                Đặt lại
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ====================================================================
+            TAB 3: RÚT TIỀN (WITHDRAW) — ĐÃ THÊM CHỌN NGÂN HÀNG & RỖNG MẶC ĐỊNH
+        ==================================================================== */}
+        {currentTab === "withdraw" && (
+          <div className="max-w-xl mx-auto space-y-6">
+            <div>
+              <h2 className="text-xl font-cyber font-bold text-white">Yêu cầu rút tiền</h2>
+              <p className="text-xs text-[#94a3b8] mt-0.5">
+                Chọn ngân hàng, nhập số tài khoản và số tiền cần rút về.
+              </p>
+            </div>
+
+            {/* Card số dư */}
+            <div className="rounded-xl bg-[#11141c] border border-[#222734] p-5 flex items-center justify-between">
+              <div>
+                <span className="text-xs text-[#94a3b8] block mb-1">Số dư khả dụng</span>
+                <span className="text-2xl font-cyber font-bold text-[#00FF66]">
+                  {formatVND(balance)}
+                </span>
+              </div>
+              <div className="text-right">
+                <span className="text-xs text-[#64748b] block">Hạn mức tối thiểu</span>
+                <span className="text-xs font-medium text-white">{formatVND(SYSTEM_CONFIG.minWithdrawal)}</span>
+              </div>
+            </div>
+
+            {/* Form rút tiền */}
+            <div className="rounded-xl bg-[#11141c] border border-[#222734] p-6 space-y-5">
+              {/* 1. CHỌN NGÂN HÀNG / VÍ ĐIỆN TỬ (RỖNG MẶC ĐỊNH) */}
+              <div>
+                <label className="block text-xs font-medium text-[#94a3b8] mb-2">
+                  Ngân hàng / Ví điện tử nhận tiền *
+                </label>
+                <div className="relative">
+                  <select
+                    value={selectedBankCode}
+                    onChange={(e) => setSelectedBankCode(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#181c26] border border-[#2b3242] focus:border-[#00FF66] text-white text-sm focus:outline-none transition-colors appearance-none cursor-pointer"
+                  >
+                    <option value="" className="bg-[#11141c] text-[#64748b]">
+                      -- [ Chọn ngân hàng / ví nhận tiền... ] --
+                    </option>
+                    <optgroup label="Ngân hàng thương mại Việt Nam" className="bg-[#11141c] text-white font-semibold">
+                      {VIETNAM_BANKS.filter((b) => b.type === "bank").map((bank) => (
+                        <option key={bank.code} value={bank.code} className="bg-[#181c26] text-white py-1">
+                          {bank.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Ví điện tử" className="bg-[#11141c] text-white font-semibold">
+                      {VIETNAM_BANKS.filter((b) => b.type === "wallet").map((bank) => (
+                        <option key={bank.code} value={bank.code} className="bg-[#181c26] text-white py-1">
+                          {bank.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#94a3b8]">
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                      <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Số tiền muốn rút (RỖNG MẶC ĐỊNH) */}
+              <div>
+                <label className="block text-xs font-medium text-[#94a3b8] mb-2">
+                  Số tiền muốn rút (VNĐ) *
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={withdrawAmount}
+                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    placeholder="Nhập số tiền cần rút..."
+                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#181c26] border border-[#2b3242] focus:border-[#00FF66] text-white text-sm focus:outline-none transition-colors"
+                  />
+                  {balance > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setWithdrawAmount(String(balance))}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#00FF66] hover:underline cursor-pointer"
+                    >
+                      Tất cả ({formatVND(balance)})
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* 3. Phương thức rút tiền */}
+              <div>
+                <label className="block text-xs font-medium text-[#94a3b8] mb-2">
+                  Phương thức xử lý
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {SYSTEM_CONFIG.withdrawalMethods.map((m) => {
+                    const isSelected = selectedMethodId === m.id;
+                    return (
+                      <div
+                        key={m.id}
+                        onClick={() => setSelectedMethodId(m.id)}
+                        className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                          isSelected
+                            ? "bg-[#181c26] border-[#00FF66] text-white"
+                            : "bg-[#181c26]/60 border-[#222734] text-[#94a3b8] hover:border-[#2b3242]"
+                        }`}
+                      >
+                        <div className="text-xs font-semibold text-white mb-0.5">{m.name}</div>
+                        <div className="text-[11px] text-[#00FF66] font-medium">Phí: {m.feePercent}%</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 4. Thông tin nhận tiền (RỖNG MẶC ĐỊNH) */}
+              <div>
+                <label className="block text-xs font-medium text-[#94a3b8] mb-2">
+                  Số tài khoản / Số điện thoại nhận tiền *
+                </label>
+                <input
+                  type="text"
+                  value={recipientAccount}
+                  onChange={(e) => setRecipientAccount(e.target.value)}
+                  placeholder="Nhập số tài khoản hoặc số điện thoại..."
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#181c26] border border-[#2b3242] focus:border-[#00FF66] text-white text-sm focus:outline-none transition-colors"
+                />
+              </div>
+
+              {/* 5. Tên người nhận — CHỈ HIỂN THỊ KHI ĐÃ NHẬP VÀ XÁC MINH, KHÔNG TỰ ĐIỀN */}
+              <div className="p-3.5 rounded-lg bg-[#181c26] border border-[#222734]">
+                <div className="text-xs text-[#94a3b8] mb-1">Tên người nhận</div>
+                {recipientVerification.status === "empty" ? (
+                  <div className="text-xs text-[#64748b] italic">
+                    Chưa xác minh (Nhập số tài khoản/SĐT ở trên để kiểm tra)
+                  </div>
+                ) : recipientVerification.status === "verified" ? (
+                  <div className="text-xs text-[#00FF66] font-semibold flex items-center gap-1.5">
+                    <Icons.CheckCircle />
+                    <span>Người nhận đã xác minh: {recipientVerification.name}</span>
+                  </div>
+                ) : (
+                  <div className="text-xs text-amber-400 flex items-center gap-1.5">
+                    <Icons.AlertCircle />
+                    <span>{recipientVerification.name}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* 6. Tóm tắt chi phí thanh toán */}
+              <div className="pt-2 border-t border-[#222734] space-y-2 text-xs">
+                {currentBank && (
+                  <div className="flex justify-between text-[#94a3b8]">
+                    <span>Ngân hàng nhận:</span>
+                    <span className="text-white font-medium">{currentBank.shortName}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-[#94a3b8]">
+                  <span>Số tiền rút:</span>
+                  <span className="text-white font-medium">{formatVND(numericAmount)}</span>
+                </div>
+                <div className="flex justify-between text-[#94a3b8]">
+                  <span>Phí ({currentMethod.feePercent}%):</span>
+                  <span className="text-white font-medium">{formatVND(calculatedFee)}</span>
+                </div>
+                <div className="flex justify-between text-[#94a3b8] pt-2 border-t border-[#222734]">
+                  <span className="font-semibold text-white">Thực nhận:</span>
+                  <span className="font-cyber font-bold text-sm text-[#00FF66]">
+                    {formatVND(calculatedNet)}
+                  </span>
+                </div>
+              </div>
+
+              {/* 7. Nút xác nhận rút tiền */}
+              <button
+                onClick={handleConfirmWithdrawal}
+                disabled={isSubmittingWithdraw || numericAmount <= 0}
+                className={`w-full py-3 rounded-lg text-xs font-semibold tracking-wide transition-colors cursor-pointer flex items-center justify-center gap-2 ${
+                  isSubmittingWithdraw || numericAmount <= 0
+                    ? "bg-[#181c26] text-[#64748b] cursor-not-allowed"
+                    : "bg-[#00FF66] text-black hover:bg-[#00e65c]"
+                }`}
+              >
+                {isSubmittingWithdraw ? (
+                  <>
+                    <Icons.Spinner />
+                    <span>Đang xử lý giao dịch...</span>
+                  </>
+                ) : (
+                  <span>XÁC NHẬN RÚT TIỀN</span>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ====================================================================
+            TAB 4: LỊCH SỬ GIAO DỊCH & NHIỆM VỤ (HISTORY)
+        ==================================================================== */}
+        {currentTab === "history" && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-cyber font-bold text-white">Lịch sử hoạt động</h2>
+              <p className="text-xs text-[#94a3b8] mt-0.5">
+                Xem lại các lệnh rút tiền và danh sách nhiệm vụ đã hoàn thành.
+              </p>
+            </div>
+
+            {/* Withdrawal Records */}
+            <div className="rounded-xl bg-[#11141c] border border-[#222734] p-5">
+              <h3 className="font-cyber font-bold text-sm text-white mb-3">Lịch sử rút tiền</h3>
+              {withdrawals.length === 0 ? (
+                <p className="text-xs text-[#64748b] py-6 text-center">
+                  Chưa có giao dịch rút tiền nào. Hãy tích lũy số dư từ nhiệm vụ và tạo lệnh rút.
+                </p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-[#222734] text-[#64748b]">
+                        <th className="py-2.5 px-3">Mã GD</th>
+                        <th className="py-2.5 px-3">Thời gian</th>
+                        <th className="py-2.5 px-3">Ngân hàng</th>
+                        <th className="py-2.5 px-3">Số tiền</th>
+                        <th className="py-2.5 px-3">Thực nhận</th>
+                        <th className="py-2.5 px-3">Người nhận</th>
+                        <th className="py-2.5 px-3">Trạng thái</th>
+                        <th className="py-2.5 px-3 text-right">Biên lai</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#1e222d]">
+                      {withdrawals.map((w) => (
+                        <tr key={w.id} className="hover:bg-[#181c26]/50">
+                          <td className="py-3 px-3 font-mono font-medium text-white">{w.id}</td>
+                          <td className="py-3 px-3 text-[#94a3b8]">{w.timestamp}</td>
+                          <td className="py-3 px-3 text-white font-medium">{w.bankName}</td>
+                          <td className="py-3 px-3 text-white">{formatVND(w.amount)}</td>
+                          <td className="py-3 px-3 font-semibold text-[#00FF66]">{formatVND(w.netAmount)}</td>
+                          <td className="py-3 px-3 text-[#94a3b8]">
+                            <div>{w.recipientName}</div>
+                            <div className="text-[11px] text-[#64748b]">{w.accountNumber}</div>
+                          </td>
+                          <td className="py-3 px-3">
+                            <span className="inline-flex items-center gap-1 text-[#00FF66] font-medium">
+                              <Icons.CheckCircle />
+                              <span>Thành công</span>
+                            </span>
+                          </td>
+                          <td className="py-3 px-3 text-right">
+                            <button
+                              onClick={() => setSuccessReceipt(w)}
+                              className="text-xs text-[#94a3b8] hover:text-[#00FF66] underline cursor-pointer"
+                            >
+                              Xem bill
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Completed Tasks History */}
+            <div className="rounded-xl bg-[#11141c] border border-[#222734] p-5">
+              <h3 className="font-cyber font-bold text-sm text-white mb-3">Nhiệm vụ đã làm</h3>
+              {tasks.filter((t) => t.status === "completed").length === 0 ? (
+                <p className="text-xs text-[#64748b] py-4 text-center">Chưa có nhiệm vụ nào hoàn thành.</p>
+              ) : (
+                <div className="space-y-2">
+                  {tasks
+                    .filter((t) => t.status === "completed")
+                    .map((t) => (
+                      <div
+                        key={t.id}
+                        className="p-3 rounded-lg bg-[#181c26] border border-[#222734] flex items-center justify-between text-xs"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span className="text-[#94a3b8]">
+                            {t.platform === "tiktok" ? <Icons.TikTok /> : <Icons.YouTube />}
+                          </span>
+                          <span className="font-semibold text-white truncate">{t.taskTypeName}</span>
+                          <span className="text-[#64748b] hidden sm:inline truncate max-w-xs">{t.link}</span>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="font-cyber font-bold text-[#00FF66]">+{formatVND(t.reward)}</span>
+                          <span className="text-[#64748b] text-[11px]">{t.completedAt || "Hôm nay"}</span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ====================================================================
+            TAB 5: TÀI KHOẢN (ACCOUNT)
+        ==================================================================== */}
+        {currentTab === "account" && (
+          <div className="max-w-xl mx-auto space-y-6">
+            <div>
+              <h2 className="text-xl font-cyber font-bold text-white">Tài khoản cá nhân</h2>
+              <p className="text-xs text-[#94a3b8] mt-0.5">
+                Thông tin hồ sơ và bảo mật tài khoản VFast Cyber.
+              </p>
+            </div>
+
+            {/* User Profile Card */}
+            <div className="rounded-xl bg-[#11141c] border border-[#222734] p-6 space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-[#181c26] border border-[#2b3242] flex items-center justify-center text-[#00FF66]">
+                  <Icons.User />
+                </div>
+                <div>
+                  <h3 className="font-cyber font-bold text-base text-white">VU THI THUY</h3>
+                  <p className="text-xs text-[#94a3b8]">ID: VFC-928410 • Thành viên chính thức</p>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-[#222734] grid grid-cols-2 gap-4 text-xs">
+                <div>
+                  <span className="text-[#64748b] block mb-0.5">Địa chỉ IP liên kết:</span>
+                  <span className="text-white font-mono">{clientIp} (1 IP cố định)</span>
+                </div>
+                <div>
+                  <span className="text-[#64748b] block mb-0.5">Trạng thái tài khoản:</span>
+                  <span className="text-[#00FF66] font-medium flex items-center gap-1">
+                    <Icons.CheckCircle />
+                    Hợp lệ
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[#64748b] block mb-0.5">Số dư khả dụng:</span>
+                  <span className="text-[#00FF66] font-cyber font-bold">{formatVND(balance)}</span>
+                </div>
+                <div>
+                  <span className="text-[#64748b] block mb-0.5">Tổng tiền đã rút:</span>
+                  <span className="text-white font-medium">{formatVND(totalWithdrawn)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="rounded-xl bg-[#11141c] border border-[#222734] p-4 space-y-2">
+              <button
+                onClick={() => setHasAgreedTerms(false)}
+                className="w-full text-left px-3 py-2 rounded text-xs text-[#94a3b8] hover:text-white hover:bg-[#181c26] transition-colors cursor-pointer"
+              >
+                Đọc lại Quy định & Điều khoản hệ thống
+              </button>
+              <button
+                onClick={() => {
+                  setBalance(0);
+                  showToast("Đã đặt lại số dư", "Số dư tài khoản đã được đưa về 0₫.", "info");
+                }}
+                className="w-full text-left px-3 py-2 rounded text-xs text-[#94a3b8] hover:text-white hover:bg-[#181c26] transition-colors cursor-pointer"
+              >
+                Đặt lại số dư về 0₫
+              </button>
+              <button
+                onClick={() => {
+                  setSimulateLockMode(true);
+                  setBypassLock(false);
+                }}
+                className="w-full text-left px-3 py-2 rounded text-xs text-amber-400 hover:text-amber-300 hover:bg-[#181c26] transition-colors cursor-pointer"
+              >
+                Xem thử giao diện khóa tự động (21h30 / 22h00)
+              </button>
+              <button
+                onClick={handleDownloadAllCode}
+                className="w-full text-left px-3 py-2 rounded text-xs text-[#00FF66] hover:text-[#00e65c] hover:bg-[#181c26] transition-colors flex items-center justify-between cursor-pointer border border-[#00FF66]/20 bg-[#00FF66]/5"
+              >
+                <span className="flex items-center gap-2">
+                  <Icons.Download />
+                  <span>Tải toàn bộ mã nguồn (1 file .txt cho điện thoại)</span>
+                </span>
+                <span className="text-[10px] text-[#64748b]">.txt</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* ======================================================================
+          FOOTER & NÚT TẢI TOÀN BỘ CODE (GỘP 1 FILE .TXT CHO ĐIỆN THOẠI)
+      ====================================================================== */}
+      <footer className="border-t border-[#222734] bg-[#090a0f] pt-8 pb-12 z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
+          {/* Hộp tải toàn bộ mã nguồn gộp dành riêng cho điện thoại */}
+          <div className="rounded-xl bg-gradient-to-r from-[#121620] via-[#11141c] to-[#181d26] border border-[#00FF66]/40 p-5 sm:p-6 shadow-xl shadow-black/40">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="space-y-1.5 max-w-2xl">
+                <div className="flex items-center flex-wrap gap-2 text-white font-cyber font-bold text-sm sm:text-base">
+                  <Icons.Code />
+                  <span>TẢI TOÀN BỘ MÃ NGUỒN HỆ THỐNG (1 FILE DUY NHẤT)</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00FF66]/20 text-[#00FF66] font-bold border border-[#00FF66]/40">
+                    Dành cho điện thoại
+                  </span>
+                </div>
+                <p className="text-xs text-[#94a3b8] leading-relaxed">
+                  Đã gộp đầy đủ toàn bộ mã nguồn hệ thống (<strong className="text-white">App.tsx</strong>, <strong className="text-white">data.ts</strong> chứa 20 link TikTok & 6 link sản phẩm, <strong className="text-white">index.html</strong>, <strong className="text-white">CSS</strong>, <strong className="text-white">package.json</strong>) vào đúng 1 file văn bản chuẩn. Bấm nút dưới để tải trực tiếp về máy.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                {/* Nút tải file trực tiếp */}
+                <a
+                  href="/vfast-cyber-all-code.txt"
+                  download="vfast-cyber-all-code.txt"
+                  onClick={handleDownloadAllCode}
+                  className="px-5 py-3 rounded-lg bg-[#00FF66] text-black font-semibold text-xs hover:bg-[#00e65c] transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#00FF66]/20 cursor-pointer"
+                >
+                  <Icons.Download />
+                  <span>Tải xuống toàn bộ Code (.txt)</span>
+                </a>
+
+                {/* Nút xem trực tiếp trên màn hình điện thoại */}
+                <button
+                  onClick={handleOpenCodePreview}
+                  className="px-4 py-3 rounded-lg bg-[#181c26] text-[#94a3b8] hover:text-white border border-[#2b3242] text-xs font-medium hover:border-[#00FF66]/50 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Icons.Code />
+                  <span>Xem & Sao chép nhanh</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#64748b] pt-2">
+            <div>
+              © 2026 <span className="text-white">VFast</span> <span className="text-[#00FF66]">Cyber</span>. Nền tảng nhiệm vụ tương tác.
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setHasAgreedTerms(false)}
+                className="hover:text-slate-300 underline cursor-pointer"
+              >
+                Điều khoản dịch vụ
+              </button>
+              <span>IP: {clientIp}</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* ======================================================================
+          MODAL ĐIỀU KHOẢN BẮT BUỘC (TERMS MODAL)
+      ====================================================================== */}
+      {!hasAgreedTerms && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl bg-[#11141c] border border-[#2b3242] rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="p-5 border-b border-[#222734] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Icons.Shield />
+                <h3 className="font-cyber font-bold text-base text-white">
+                  QUY ĐỊNH QUAN TRỌNG — ĐỌC KỸ TRƯỚC KHI SỬ DỤNG
+                </h3>
+              </div>
+            </div>
+
+            <div className="p-5 overflow-y-auto space-y-4 flex-1 text-xs leading-relaxed text-[#94a3b8]">
+              {TERMS_SECTIONS.map((sec) => (
+                <div key={sec.num} className="p-3 rounded-lg bg-[#181c26] border border-[#222734]">
+                  <div className="font-semibold text-white mb-1">
+                    {sec.num}. {sec.title}
+                  </div>
+                  <p className="text-[#94a3b8]">{sec.content}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="p-4 border-t border-[#222734] bg-[#0e1117] flex flex-col sm:flex-row items-center justify-between gap-3">
+              <label className="flex items-center gap-2 text-xs text-white cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={tempTermsChecked}
+                  onChange={(e) => setTempTermsChecked(e.target.checked)}
+                  className="w-4 h-4 rounded border-[#2b3242] bg-[#181c26] accent-[#00FF66]"
+                />
+                <span>Tôi đã đọc, hiểu rõ và đồng ý với các điều khoản trên</span>
+              </label>
+
+              <button
+                onClick={() => {
+                  if (tempTermsChecked) {
+                    setHasAgreedTerms(true);
+                    showToast("Đã xác nhận điều khoản", "Chào mừng bạn đến với VFast Cyber.", "success");
+                  }
+                }}
+                disabled={!tempTermsChecked}
+                className={`px-5 py-2 rounded-lg text-xs font-semibold tracking-wide transition-colors cursor-pointer ${
+                  tempTermsChecked
+                    ? "bg-[#00FF66] text-black hover:bg-[#00e65c]"
+                    : "bg-[#181c26] text-[#64748b] cursor-not-allowed border border-[#222734]"
+                }`}
+              >
+                Tôi đã đọc và đồng ý
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================================
+          MODAL BIÊN LAI RÚT TIỀN THÀNH CÔNG (SUCCESS RECEIPT MODAL)
+      ====================================================================== */}
+      {successReceipt && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-[#11141c] border border-[#2b3242] rounded-xl shadow-2xl p-6 space-y-5">
+            <div className="text-center space-y-1">
+              <div className="w-10 h-10 rounded-full bg-[#181c26] border border-[#00FF66]/30 text-[#00FF66] mx-auto flex items-center justify-center mb-2">
+                <Icons.CheckCircle />
+              </div>
+              <h3 className="font-cyber font-bold text-lg text-white">RÚT TIỀN THÀNH CÔNG</h3>
+              <p className="text-xs text-[#94a3b8]">Giao dịch đã được hệ thống xác nhận</p>
+            </div>
+
+            <div className="p-4 rounded-lg bg-[#181c26] border border-[#222734] space-y-2.5 text-xs">
+              <div className="flex justify-between">
+                <span className="text-[#64748b]">Mã giao dịch:</span>
+                <span className="font-mono font-medium text-white">{successReceipt.id}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#64748b]">Thời gian:</span>
+                <span className="text-white">{successReceipt.timestamp}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#64748b]">Ngân hàng nhận:</span>
+                <span className="text-white font-medium">{successReceipt.bankName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#64748b]">Số tiền rút:</span>
+                <span className="text-white font-medium">{formatVND(successReceipt.amount)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#64748b]">Phí xử lý:</span>
+                <span className="text-white font-medium">{formatVND(successReceipt.fee)}</span>
+              </div>
+              <div className="flex justify-between pt-1.5 border-t border-[#222734]">
+                <span className="font-semibold text-white">Thực nhận:</span>
+                <span className="font-cyber font-bold text-sm text-[#00FF66]">
+                  {formatVND(successReceipt.netAmount)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#64748b]">Phương thức:</span>
+                <span className="text-white">{successReceipt.methodName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#64748b]">Người nhận:</span>
+                <span className="text-white">{successReceipt.recipientName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#64748b]">Số tài khoản/SĐT:</span>
+                <span className="text-white">{successReceipt.accountNumber}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => handleDownloadBill(successReceipt)}
+                className="flex-1 py-2.5 rounded-lg bg-[#00FF66] text-black font-semibold text-xs flex items-center justify-center gap-2 hover:bg-[#00e65c] transition-colors cursor-pointer"
+              >
+                <Icons.Download />
+                <span>Lưu ảnh bill</span>
+              </button>
+              <button
+                onClick={() => setSuccessReceipt(null)}
+                className="px-4 py-2.5 rounded-lg bg-[#181c26] text-[#94a3b8] hover:text-white border border-[#2b3242] text-xs font-medium cursor-pointer"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================================
+          MODAL XEM & SAO CHÉP TOÀN BỘ CODE TRỰC TIẾP TRÊN ĐIỆN THOẠI
+      ====================================================================== */}
+      {showAllCodeModal && (
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
+          <div className="w-full max-w-4xl bg-[#11141c] border border-[#2b3242] rounded-xl shadow-2xl flex flex-col max-h-[92vh]">
+            <div className="p-4 sm:p-5 border-b border-[#222734] flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-[#181c26] border border-[#00FF66]/30 text-[#00FF66] flex items-center justify-center shrink-0">
+                  <Icons.Code />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-cyber font-bold text-sm sm:text-base text-white truncate">
+                    TOÀN BỘ MÃ NGUỒN GỘP (1 FILE DUY NHẤT)
+                  </h3>
+                  <p className="text-[11px] text-[#94a3b8] truncate">
+                    Tệp: vfast-cyber-all-code.txt • Đầy đủ data.ts, App.tsx, CSS, HTML, package.json
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(allCodeText);
+                    showToast("Đã sao chép!", "Toàn bộ mã nguồn đã được lưu vào bộ nhớ tạm của bạn.", "success");
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-[#00FF66] text-black font-semibold text-xs hover:bg-[#00e65c] transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Icons.Copy />
+                  <span className="hidden sm:inline">Sao chép tất cả</span>
+                  <span className="sm:hidden">Chép</span>
+                </button>
+                <button
+                  onClick={() => setShowAllCodeModal(false)}
+                  className="p-1.5 rounded-lg bg-[#181c26] text-[#94a3b8] hover:text-white border border-[#2b3242] cursor-pointer"
+                >
+                  <Icons.Close />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-4 overflow-y-auto flex-1 bg-[#090b10]">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div className="text-[#94a3b8] flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#00FF66] animate-pulse"></span>
+                  <span>Tổng hợp {allCodeText ? (allCodeText.length).toLocaleString() : "135,000+"} ký tự mã nguồn</span>
+                </div>
+                <a
+                  href="/vfast-cyber-all-code.txt"
+                  download="vfast-cyber-all-code.txt"
+                  onClick={handleDownloadAllCode}
+                  className="text-[#00FF66] hover:underline flex items-center gap-1 font-medium cursor-pointer"
+                >
+                  <Icons.Download />
+                  <span>Tải file .txt này về điện thoại</span>
+                </a>
+              </div>
+
+              <pre className="p-3.5 bg-[#0e1117] text-[#86efac] font-mono text-[11px] leading-relaxed overflow-x-auto rounded-lg border border-[#1f2430] whitespace-pre-wrap select-all selection:bg-[#00FF66] selection:text-black">
+                {allCodeText || "Đang tải mã nguồn..."}
+              </pre>
+            </div>
+
+            <div className="p-3 sm:p-4 border-t border-[#222734] bg-[#0e1117] flex items-center justify-between gap-3">
+              <span className="text-[11px] text-[#64748b]">
+                Nhấn giữ vào khung code để chọn hoặc bấm "Sao chép tất cả"
+              </span>
+              <button
+                onClick={() => setShowAllCodeModal(false)}
+                className="px-4 py-2 rounded-lg bg-[#181c26] text-white border border-[#2b3242] text-xs font-medium hover:bg-[#222734] cursor-pointer"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================================
+          TOAST NOTIFICATION (GÓC MÀN HÌNH)
+      ====================================================================== */}
+      <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-sm w-full pointer-events-none">
+        {toasts.map((t) => (
+          <div
+            key={t.id}
+            className="p-3.5 rounded-lg bg-[#181c26] border border-[#2b3242] text-white shadow-lg pointer-events-auto flex items-start gap-2.5 text-xs animate-fadeIn"
+          >
+            {t.type === "success" && <Icons.CheckCircle />}
+            {t.type === "warning" && <Icons.AlertCircle />}
+            <div className="min-w-0">
+              <div className="font-semibold text-white">{t.title}</div>
+              <div className="text-[#94a3b8] mt-0.5">{t.message}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+
